@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geology Lab - Rock & Mineral Identification</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            cursor: pointer;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #667eea;
+        }
+
+        .content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .specimen-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .specimen-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .specimen-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .specimen-img {
+            width: 100%;
+            height: 200px;
+            background: #ddd;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .specimen-card h3 {
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .specimen-card p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+        }
+
+        .test-section h2 {
+            color: #d35400;
+            margin-bottom: 15px;
+        }
+
+        .test-controls {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .test-btn {
+            padding: 12px 24px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .test-btn:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+        }
+
+        .test-btn:active {
+            transform: scale(0.95);
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+        }
+
+        .hardness-scale {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .hardness-item {
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #3498db;
+        }
+
+        .hardness-item strong {
+            display: block;
+            font-size: 1.5em;
+            color: #3498db;
+            margin-bottom: 5px;
+        }
+
+        .quiz-section {
+            margin-top: 30px;
+        }
+
+        .quiz-question {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .quiz-option {
+            padding: 15px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quiz-option:hover {
+            background: #e3f2fd;
+            border-color: #3498db;
+        }
+
+        .quiz-option.correct {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .quiz-option.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .property-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .property-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .property-item strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: white;
+            font-size: 1.2em;
+        }
+
+        .video-placeholder::before {
+            content: "▶";
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🪨 Interactive Geology Lab</h1>
+            <p>Explore rocks, minerals, and identification techniques</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('specimens')">Specimen Gallery</button>
+            <button class="tab-btn" onclick="showTab('tests')">Identification Tests</button>
+            <button class="tab-btn" onclick="showTab('experiments')">Experiments</button>
+            <button class="tab-btn" onclick="showTab('quiz')">Knowledge Quiz</button>
+        </div>
+
+        <div class="content">
+            <!-- Specimens Tab -->
+            <div id="specimens" class="tab-content active">
+                <h2>Rock & Mineral Specimens</h2>
+                <p>Click on any specimen to learn more about its properties and identification features.</p>
+                
+                <div class="specimen-grid">
+                    <div class="specimen-card" onclick="showSpecimen('granite')">
+                        <div class="specimen-img">🗿</div>
+                        <h3>Granite</h3>
+                        <p><strong>Type:</strong> Igneous (Intrusive)<br>
+                        <strong>Hardness:</strong> 6-7<br>
+                        Coarse-grained with visible crystals of quartz, feldspar, and mica.</p>
+                    </div>
+
+                    <div class="specimen-card" onclick="showSpecimen('basalt')">
+                        <div class="specimen-img">⬛</div>
+                        <h3>Basalt</h3>
+                        <p><strong>Type:</strong> Igneous (Extrusive)<br>
+                        <strong>Hardness:</strong> 5-6<br>
+                        Fine-grained, dark volcanic rock, often with gas bubbles.</p>
+                    </div>
+
+                    <div class="specimen-card" onclick="showSpecimen('limestone')">
+                        <div class="specimen-img">🧱</div>
+                        <h3>Limestone</h3>
+                        <p><strong>Type:</strong> Sedimentary<br>
+                        <strong>Hardness:</strong> 3-4<br>
+                        Fizzes with acid, often contains fossils, light colored.</p>
+                    </div>
+
+                    <div class="specimen-card" onclick="showSpecimen('sandstone')">
+                        <div class="specimen-img">🟫</div>
+                        <h3>Sandstone</h3>
+                        <p><strong>Type:</strong> Sedimentary<br>
+                        <strong>Hardness:</strong> 6-7<br>
+                        Grainy texture, made of sand-sized particles cemented together.</p>
+                    </div>
+
+                    <div class="specimen-card" onclick="showSpecimen('marble')">
+                        <div class="specimen-img">⬜</div>
+                        <h3>Marble</h3>
+                        <p><strong>Type:</strong> Metamorphic<br>
+                        <strong>Hardness:</strong> 3-4<br>
+                        Recrystallized limestone, often with colorful veins.</p>
+                    </div>
+
+                    <div class="specimen-card" onclick="showSpecimen('quartz')">
+                        <div class="specimen-img">💎</div>
+                        <h3>Quartz</h3>
+                        <p><strong>Type:</strong> Mineral<br>
+                        <strong>Hardness:</strong> 7<br>
+                        Very hard, glassy luster, hexagonal crystals, no cleavage.</p>
+                    </div>
+
+                    <div class="specimen-card" onclick="showSpecimen('feldspar')">
+                        <div class="specimen-img">🔷</div>
+                        <h3>Feldspar</h3>
+                        <p><strong>Type:</strong> Mineral<br>
+                        <strong>Hardness:</strong> 6-6.5<br>
+                        Good cleavage, common in igneous rocks, various colors.</p>
+                    </div>
+
+                    <div class="specimen-card" onclick="showSpecimen('mica')">
+                        <div class="specimen-img">✨</div>
+                        <h3>Mica</h3>
+                        <p><strong>Type:</strong> Mineral<br>
+                        <strong>Hardness:</strong> 2.5-3<br>
+                        Perfect cleavage, splits into thin sheets, shiny.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tests Tab -->
+            <div id="tests" class="tab-content">
+                <h2>Identification Tests & Techniques</h2>
+
+                <div class="test-section">
+                    <h2>🔨 Hardness Test (Mohs Scale)</h2>
+                    <p>The Mohs scale ranks minerals from 1 (softest) to 10 (hardest). Test minerals by scratching them with reference materials.</p>
+                    
+                    <div class="hardness-scale">
+                        <div class="hardness-item">
+                            <strong>1</strong>
+                            <div>Talc</div>
+                        </div>
+                        <div class="hardness-item">
+                            <strong>2</strong>
+                            <div>Gypsum</div>
+                        </div>
+                        <div class="hardness-item">
+                            <strong>3</strong>
+                            <div>Calcite</div>
+                        </div>
+                        <div class="hardness-item">
+                            <strong>4</strong>
+                            <div>Fluorite</div>
+                        </div>
+                        <div class="hardness-item">
+                            <strong>5</strong>
+                            <div>Apatite</div>
+                        </div>
+                        <div class="hardness-item">
+                            <strong>6</strong>
+                            <div>Feldspar</div>
+                        </div>
+                        <div class="hardness-item">
+                            <strong>7</strong>
+                            <div>Quartz</div>
+                        </div>
+                        <div class="hardness-item">
+                            <strong>8</strong>
+                            <div>Topaz</div>
+                        </div>
+                        <div class="hardness-item">
+                            <strong>9</strong>
+                            <div>Corundum</div>
+                        </div>
+                        <div class="hardness-item">
+                            <strong>10</strong>
+                            <div>Diamond</div>
+                        </div>
+                    </div>
+
+                    <div class="test-controls">
+                        <button class="test-btn" onclick="runHardnessTest()">Simulate Hardness Test</button>
+                    </div>
+                    <div id="hardness-result" class="result-box" style="display:none;"></div>
+                </div>
+
+                <div class="test-section" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+                    <h2>💧 Acid Test</h2>
+                    <p>Carbonate minerals like calcite fizz when exposed to dilute hydrochloric acid, producing CO₂ bubbles.</p>
+                    
+                    <div class="video-container">
+                        <div class="video-placeholder">
+                            Acid Test Demonstration<br>
+                            <small>(Limestone reacting with HCl)</small>
+                        </div>
+                    </div>
+
+                    <div class="test-controls">
+                        <button class="test-btn" onclick="runAcidTest()">Simulate Acid Test</button>
+                    </div>
+                    <div id="acid-result" class="result-box" style="display:none;"></div>
+                </div>
+
+                <div class="test-section" style="background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);">
+                    <h2>🌟 Luster Test</h2>
+                    <p>Luster describes how light reflects from a mineral's surface: metallic, vitreous (glassy), pearly, silky, or dull.</p>
+                    
+                    <div class="test-controls">
+                        <button class="test-btn" onclick="runLusterTest()">Simulate Luster Test</button>
+                    </div>
+                    <div id="luster-result" class="result-box" style="display:none;"></div>
+                </div>
+
+                <div class="test-section" style="background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);">
+                    <h2>📏 Cleavage & Fracture</h2>
+                    <p>Cleavage is the tendency to break along flat planes. Fracture is irregular breakage.</p>
+                    
+                    <div class="test-controls">
+                        <button class="test-btn" onclick="runCleavageTest()">Simulate Cleavage Test</button>
+                    </div>
+                    <div id="cleavage-result" class="result-box" style="display:none;"></div>
+                </div>
+            </div>
+
+            <!-- Experiments Tab -->
+            <div id="experiments" class="tab-content">
+                <h2>Virtual Experiments</h2>
+
+                <div class="test-section">
+                    <h2>🔬 Experiment 1: Crystal Growth</h2>
+                    <p>Observe how minerals form crystals as they cool or precipitate from solution.</p>
+                    
+                    <div class="video-container">
+                        <div class="video-placeholder">
+                            Crystal Growth Time-Lapse<br>
+                            <small>(Salt crystal formation)</small>
+                        </div>
+                    </div>
+
+                    <button class="test-btn" onclick="startCrystalGrowth()">Start Crystal Growth Simulation</button>
+                    <div id="crystal-result" class="result-box" style="display:none;"></div>
+                </div>
+
+                <div class="test-section" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                    <h2>🌋 Experiment 2: Rock Cycle</h2>
+                    <p>Understand how rocks transform through igneous, sedimentary, and metamorphic processes.</p>
+                    
+                    <button class="test-btn" onclick="showRockCycle()">View Rock Cycle</button>
+                    <div id="cycle-result" class="result-box" style="display:none;"></div>
+                </div>
+
+                <div class="test-section" style="background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);">
+                    <h2>⚒️ Experiment 3: Weathering & Erosion</h2>
+                    <p>See how rocks break down through physical and chemical weathering.</p>
+                    
+                    <button class="test-btn" onclick="simulateWeathering()">Simulate Weathering</button>
+                    <div id="weather-result" class="result-box" style="display:none;"></div>
+                </div>
+            </div>
+
+            <!-- Quiz Tab -->
+            <div id="quiz" class="tab-content">
+                <h2>Test Your Knowledge</h2>
+                <p>Answer these questions to test your understanding of rocks and minerals!</p>
+
+                <div class="quiz-section" id="quiz-container"></div>
+                <button class="test-btn" onclick="resetQuiz()">Reset Quiz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for specimen details -->
+    <div id="specimenModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Specimen data
+        const specimens = {
+            granite: {
+                name: 'Granite',
+                type: 'Igneous (Intrusive)',
+                hardness: '6-7',
+                color: 'Usually pink, gray, or white',
+                luster: 'Vitreous to dull',
+                composition: 'Quartz, Feldspar, Mica',
+                uses: 'Countertops, buildings, monuments',
+                facts: 'Forms deep underground from slowly cooling magma. The slow cooling allows large crystals to form.'
+            },
+            basalt: {
+                name: 'Basalt',
+                type: 'Igneous (Extrusive)',
+                hardness: '5-6',
+                color: 'Dark gray to black',
+                luster: 'Dull',
+                composition: 'Plagioclase, Pyroxene, Olivine',
+                uses: 'Road construction, railroad ballast',
+                facts: 'Most common volcanic rock on Earth. Forms from rapidly cooling lava, creating fine-grained texture.'
+            },
+            limestone: {
+                name: 'Limestone',
+                type: 'Sedimentary',
+                hardness: '3-4',
+                color: 'White, tan, gray',
+                luster: 'Dull to earthy',
+                composition: 'Calcite (CaCO₃)',
+                uses: 'Cement, building stone, agriculture',
+                facts: 'Fizzes with acid! Forms from marine organism shells and coral. May contain fossils.'
+            },
+            sandstone: {
+                name: 'Sandstone',
+                type: 'Sedimentary',
+                hardness: '6-7',
+                color: 'Red, brown, tan, yellow',
+                luster: 'Dull',
+                composition: 'Quartz, Feldspar grains',
+                uses: 'Building stone, paving',
+                facts: 'You can see and feel individual sand grains. Colors come from iron oxide cement.'
+            },
+            marble: {
+                name: 'Marble',
+                type: 'Metamorphic',
+                hardness: '3-4',
+                color: 'White, pink, green, black',
+                luster: 'Vitreous when polished',
+                composition: 'Recrystallized Calcite',
+                uses: 'Sculpture, architecture, decorative stone',
+                facts: 'Formed from limestone under heat and pressure. Used by Michelangelo for sculptures!'
+            },
+            quartz: {
+                name: 'Quartz',
+                type: 'Mineral',
+                hardness: '7',
+                color: 'Clear, white, purple, pink, yellow',
+                luster: 'Vitreous (glassy)',
+                composition: 'Silicon Dioxide (SiO₂)',
+                uses: 'Glass, electronics, jewelry',
+                facts: 'Second most abundant mineral in Earth\'s crust. Varieties include amethyst, citrine, and rose quartz.'
+            },
+            feldspar: {
+                name: 'Feldspar',
+                type: 'Mineral',
+                hardness: '6-6.5',
+                color: 'Pink, white, gray, green',
+                luster: 'Vitreous to pearly',
+                composition: 'Aluminum Silicates',
+                uses: 'Ceramics, glass',
+                facts: 'Most abundant mineral group in Earth\'s crust. Shows good cleavage in two directions at 90°.'
+            },
+            mica: {
+                name: 'Mica',
+                type: 'Mineral',
+                hardness: '2.5-3',
+                color: 'Black, brown, clear',
+                luster: 'Pearly to vitreous',
+                composition: 'Sheet Silicates',
+                uses: 'Electronics, cosmetics, insulation',
+                facts: 'Perfect cleavage allows it to split into thin, flexible sheets. Black mica is biotite, clear is muscovite.'
+            }
+        };
+
+        // Show specimen details
+        function showSpecimen(id) {
+            const spec = specimens[id];
+            const modal = document.getElementById('specimenModal');
+            const body = document.getElementById('modal-body');
+            
+            body.innerHTML = `
+                <h2>${spec.name}</h2>
+                <div class="specimen-img" style="width: 100%; height: 300px; font-size: 5em; margin: 20px 0;">
+                    ${id === 'granite' ? '🗿' : id === 'basalt' ? '⬛' : id === 'limestone' ? '🧱' : 
+                      id === 'sandstone' ? '🟫' : id === 'marble' ? '⬜' : id === 'quartz' ? '💎' : 
+                      id === 'feldspar' ? '🔷' : '✨'}
+                </div>
+                <div class="property-grid">
+                    <div class="property-item">
+                        <strong>Type</strong>
+                        ${spec.type}
+                    </div>
+                    <div class="property-item">
+                        <strong>Hardness</strong>
+                        ${spec.hardness} (Mohs)
+                    </div>
+                    <div class="property-item">
+                        <strong>Color</strong>
+                        ${spec.color}
+                    </div>
+                    <div class="property-item">
+                        <strong>Luster</strong>
+                        ${spec.luster}
+                    </div>
+                    <div class="property-item">
+                        <strong>Composition</strong>
+                        ${spec.composition}
+                    </div>
+                    <div class="property-item">
+                        <strong>Common Uses</strong>
+                        ${spec.uses}
+                    </div>
+                </div>
+                <div style="margin-top: 20px; padding: 20px; background: #e3f2fd; border-radius: 10px;">
+                    <h3>Interesting Facts</h3>
+                    <p>${spec.facts}</p>
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('specimenModal').style.display = 'none';
+        }
+
+        // Test simulations
+        function runHardnessTest() {
+            const minerals = ['Talc (1)', 'Gypsum (2)', 'Calcite (3)', 'Fluorite (4)', 'Apatite (5)', 
+                            'Feldspar (6)', 'Quartz (7)', 'Topaz (8)', 'Corundum (9)', 'Diamond (10)'];
+            const random = minerals[Math.floor(Math.random() * minerals.length)];
+            const result = document.getElementById('hardness-result');
+            result.style.display = 'block';
+            result.innerHTML = `
+                <h3>Test Result:</h3>
+                <p><strong>Sample tested:</strong> ${random}</p>
+                <p>Your sample can scratch ${minerals[Math.floor(Math.random() * 5)]} but cannot scratch ${minerals[Math.floor(Math.random() * 5) + 5]}.</p>
+                <p><strong>Tip:</strong> Always test on a fresh surface and look for a permanent scratch mark!</p>
+            `;
+        }
+
+        function runAcidTest() {
+            const reactions = [
+                'Strong fizzing! This sample contains calcite (CaCO₃). Likely limestone or marble.',
+                'Weak fizzing. May contain some carbonate minerals mixed with other minerals.',
+                'No reaction. This sample does not contain carbonate minerals.'
+            ];
+            const result = document.getElementById('acid-result');
+            result.style.display = 'block';
+            result.innerHTML = `
+                <h3>Test Result:</h3>
+                <p>${reactions[Math.floor(Math.random() * reactions.length)]}</p>
+                <p><strong>Safety Note:</strong> Always wear safety goggles and gloves when working with acids!</p>
+            `;
+        }
+
+        function runLusterTest() {
+            const lusters = [
+                { type: 'Metallic', desc: 'Shiny like polished metal. Common in ore minerals like pyrite.' },
+                { type: 'Vitreous', desc: 'Glassy appearance like quartz or glass.' },
+                { type: 'Pearly', desc: 'Soft sheen like a pearl. Common in talc and some micas.' },
+                { type: 'Silky', desc: 'Fibrous appearance with soft sheen. Found in asbestos and satin spar.' },
+                { type: 'Dull/Earthy', desc: 'No shine. Common in clay minerals and weathered rocks.' }
+            ];
+            const sample = lusters[Math.floor(Math.random() * lusters.length)];
+            const result = document.getElementById('luster-result');
+            result.style.display = 'block';
+            result.innerHTML = `
+                <h3>Test Result:</h3>
+                <p><strong>Luster Type:</strong> ${sample.type}</p>
+                <p>${sample.desc}</p>
+            `;
+        }
+
+        function runCleavageTest() {
+            const patterns = [
+                'Perfect cleavage in one direction - like mica splitting into sheets!',
+                'Good cleavage in two directions at 90° - characteristic of feldspar.',
+                'Cleavage in three directions at 90° - forms cubic fragments like halite.',
+                'Cleavage in three directions not at 90° - forms rhombohedral shapes like calcite.',
+                'No cleavage, conchoidal fracture - breaks like glass, seen in quartz.'
+            ];
+            const result = document.getElementById('cleavage-result');
+            result.style.display = 'block';
+            result.innerHTML = `
+                <h3>Test Result:</h3>
+                <p>${patterns[Math.floor(Math.random() * patterns.length)]}</p>
+                <p><strong>Remember:</strong> Cleavage is a consistent property - the same mineral always breaks the same way!</p>
+            `;
+        }
+
+        function startCrystalGrowth() {
+            const result = document.getElementById('crystal-result');
+            result.style.display = 'block';
+            let stage = 0;
+            const stages = [
+                '🌡️ Day 1: Solution is saturated with dissolved minerals...',
+                '💧 Day 3: Small nucleation points appear as solution evaporates...',
+                '⭐ Day 7: Tiny crystals begin to form on nucleation sites...',
+                '💎 Day 14: Crystals grow larger with visible geometric faces...',
+                '🏆 Day 21: Large, well-formed crystals with perfect symmetry!'
+            ];
+            
+            result.innerHTML = `<h3>Crystal Growth Progress:</h3><p>${stages[0]}</p>`;
+            
+            const interval = setInterval(() => {
+                stage++;
+                if (stage < stages.length) {
+                    result.innerHTML = `<h3>Crystal Growth Progress:</h3><p>${stages[stage]}</p>`;
+                } else {
+                    clearInterval(interval);
+                    result.innerHTML += `<p style="margin-top: 15px;"><strong>Complete!</strong> Factors affecting crystal size: cooling rate, space available, and chemical composition.</p>`;
+                }
+            }, 1500);
+        }
+
+        function showRockCycle() {
+            const result = document.getElementById('cycle-result');
+            result.style.display = 'block';
+            result.innerHTML = `
+                <h3>The Rock Cycle</h3>
+                <div style="padding: 20px; background: white; border-radius: 10px; margin-top: 15px;">
+                    <p style="margin-bottom: 15px;"><strong>🌋 Igneous Rocks:</strong> Form from cooling magma/lava</p>
+                    <p style="margin-bottom: 15px;">↓ <em>Weathering & Erosion</em> ↓</p>
+                    <p style="margin-bottom: 15px;"><strong>🏔️ Sedimentary Rocks:</strong> Form from compressed sediments</p>
+                    <p style="margin-bottom: 15px;">↓ <em>Heat & Pressure</em> ↓</p>
+                    <p style="margin-bottom: 15px;"><strong>⛰️ Metamorphic Rocks:</strong> Form from transformed existing rocks</p>
+                    <p style="margin-bottom: 15px;">↓ <em>Melting</em> ↓</p>
+                    <p><strong>🔥 Magma:</strong> Cycle back to igneous rocks!</p>
+                </div>
+                <p style="margin-top: 15px;"><strong>Key Point:</strong> Any rock type can transform into any other type through the rock cycle!</p>
+            `;
+        }
+
+        function simulateWeathering() {
+            const result = document.getElementById('weather-result');
+            result.style.display = 'block';
+            let stage = 0;
+            const stages = [
+                { icon: '🗿', text: 'Fresh granite exposed at surface...' },
+                { icon: '🌧️', text: 'Rainwater enters cracks (physical weathering)...' },
+                { icon: '❄️', text: 'Water freezes and expands, widening cracks...' },
+                { icon: '🍃', text: 'Chemical weathering begins, feldspar breaks down...' },
+                { icon: '🏜️', text: 'Rock fragments into sand and clay particles!' }
+            ];
+            
+            result.innerHTML = `
+                <h3>Weathering Simulation:</h3>
+                <div style="font-size: 3em; text-align: center; margin: 20px 0;">${stages[0].icon}</div>
+                <p>${stages[0].text}</p>
+            `;
+            
+            const interval = setInterval(() => {
+                stage++;
+                if (stage < stages.length) {
+                    result.innerHTML = `
+                        <h3>Weathering Simulation:</h3>
+                        <div style="font-size: 3em; text-align: center; margin: 20px 0;">${stages[stage].icon}</div>
+                        <p>${stages[stage].text}</p>
+                    `;
+                } else {
+                    clearInterval(interval);
+                    result.innerHTML += `<p style="margin-top: 15px;"><strong>Result:</strong> Weathering breaks down rocks into sediments that can form new sedimentary rocks!</p>`;
+                }
+            }, 2000);
+        }
+
+        // Quiz functionality
+        let quizScore = 0;
+        let answeredQuestions = 0;
+        
+        const quizQuestions = [
+            {
+                question: 'Which mineral is the hardest on the Mohs scale?',
+                options: ['Quartz', 'Diamond', 'Corundum', 'Topaz'],
+                correct: 1
+            },
+            {
+                question: 'What type of rock forms from cooling lava?',
+                options: ['Sedimentary', 'Metamorphic', 'Igneous', 'Crystalline'],
+                correct: 2
+            },
+            {
+                question: 'Which rock fizzes when tested with acid?',
+                options: ['Granite', 'Limestone', 'Basalt', 'Sandstone'],
+                correct: 1
+            },
+            {
+                question: 'What is the main mineral component of sandstone?',
+                options: ['Calcite', 'Mica', 'Quartz', 'Feldspar'],
+                correct: 2
+            },
+            {
+                question: 'Which property describes how light reflects from a mineral?',
+                options: ['Hardness', 'Cleavage', 'Luster', 'Streak'],
+                correct: 2
+            },
+            {
+                question: 'Marble is a metamorphic rock formed from which sedimentary rock?',
+                options: ['Sandstone', 'Shale', 'Limestone', 'Conglomerate'],
+                correct: 2
+            },
+            {
+                question: 'What type of cleavage does mica have?',
+                options: ['Perfect in one direction', 'Good in two directions', 'Cubic', 'No cleavage'],
+                correct: 0
+            },
+            {
+                question: 'Which of these is an igneous rock that cools slowly underground?',
+                options: ['Basalt', 'Obsidian', 'Granite', 'Pumice'],
+                correct: 2
+            },
+            {
+                question: 'What is the softest mineral on the Mohs hardness scale?',
+                options: ['Gypsum', 'Talc', 'Calcite', 'Graphite'],
+                correct: 1
+            },
+            {
+                question: 'Which process turns sedimentary rocks into metamorphic rocks?',
+                options: ['Cooling', 'Weathering', 'Heat and Pressure', 'Erosion'],
+                correct: 2
+            },
+            {
+                question: 'What is the streak color of a mineral?',
+                options: ['The color of its surface', 'The color of its powder', 'The color when polished', 'The color in sunlight'],
+                correct: 1
+            },
+            {
+                question: 'Which mineral group is most abundant in Earth\'s crust?',
+                options: ['Carbonates', 'Oxides', 'Silicates', 'Sulfides'],
+                correct: 2
+            },
+            {
+                question: 'What type of rock is obsidian?',
+                options: ['Sedimentary', 'Metamorphic', 'Igneous', 'Organic'],
+                correct: 2
+            },
+            {
+                question: 'Which mineral has a hardness of 7 on the Mohs scale?',
+                options: ['Feldspar', 'Calcite', 'Quartz', 'Apatite'],
+                correct: 2
+            },
+            {
+                question: 'What is the chemical formula for calcite?',
+                options: ['SiO₂', 'CaCO₃', 'Fe₂O₃', 'Al₂O₃'],
+                correct: 1
+            },
+            {
+                question: 'Which rock forms from compacted plant material?',
+                options: ['Shale', 'Coal', 'Limestone', 'Slate'],
+                correct: 1
+            },
+            {
+                question: 'What causes the different colors in minerals?',
+                options: ['Temperature', 'Trace elements and impurities', 'Age', 'Location'],
+                correct: 1
+            },
+            {
+                question: 'Which metamorphic rock forms from shale?',
+                options: ['Marble', 'Quartzite', 'Slate', 'Gneiss'],
+                correct: 2
+            },
+            {
+                question: 'What is the term for a mineral breaking along smooth, flat surfaces?',
+                options: ['Fracture', 'Cleavage', 'Luster', 'Streak'],
+                correct: 1
+            },
+            {
+                question: 'Which igneous rock has the smallest crystal size?',
+                options: ['Granite', 'Diorite', 'Basalt', 'Gabbro'],
+                correct: 2
+            },
+            {
+                question: 'What type of luster does pyrite (fool\'s gold) have?',
+                options: ['Vitreous', 'Metallic', 'Pearly', 'Silky'],
+                correct: 1
+            },
+            {
+                question: 'Which sedimentary rock is made of clay particles?',
+                options: ['Sandstone', 'Conglomerate', 'Shale', 'Breccia'],
+                correct: 2
+            },
+            {
+                question: 'What mineral is scratched by a steel nail but not by a copper penny?',
+                options: ['Talc (1)', 'Calcite (3)', 'Apatite (5)', 'Quartz (7)'],
+                correct: 2
+            },
+            {
+                question: 'Which process involves rocks being broken down by wind, water, and ice?',
+                options: ['Metamorphism', 'Weathering', 'Cementation', 'Crystallization'],
+                correct: 1
+            }
+        ];
+
+        function loadQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+            
+            quizQuestions.forEach((q, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'quiz-question';
+                qDiv.innerHTML = `
+                    <h3>Question ${index + 1}</h3>
+                    <p>${q.question}</p>
+                    <div class="quiz-options">
+                        ${q.options.map((opt, i) => `
+                            <div class="quiz-option" onclick="checkAnswer(${index}, ${i}, this)">
+                                ${opt}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(qDiv);
+            });
+        }
+
+        function checkAnswer(questionIndex, answerIndex, element) {
+            const question = quizQuestions[questionIndex];
+            const options = element.parentElement.children;
+            
+            // Disable all options in this question
+            Array.from(options).forEach(opt => {
+                opt.style.pointerEvents = 'none';
+            });
+            
+            if (answerIndex === question.correct) {
+                element.classList.add('correct');
+                element.innerHTML += ' ✓ Correct!';
+            } else {
+                element.classList.add('incorrect');
+                element.innerHTML += ' ✗ Incorrect';
+                options[question.correct].classList.add('correct');
+                options[question.correct].innerHTML += ' ✓ Correct answer';
+            }
+        }
+
+        function resetQuiz() {
+            loadQuiz();
+        }
+
+        // Initialize quiz on load
+        loadQuiz();
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('specimenModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

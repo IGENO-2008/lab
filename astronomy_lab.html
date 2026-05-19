@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astronomy Laboratory Practice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1d3a 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 25px;
+            background: rgba(100, 150, 255, 0.2);
+            border: 2px solid #6496ff;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 25px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            background: rgba(100, 150, 255, 0.4);
+        }
+
+        .tab-btn.active {
+            background: #6496ff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .lab-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .lab-card h3 {
+            color: #ffd700;
+            margin-bottom: 15px;
+        }
+
+        .lab-card p, .lab-card li {
+            color: #a8b2d1;
+            line-height: 1.8;
+        }
+
+        .canvas-container {
+            background: #000;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        canvas {
+            border: 2px solid #6496ff;
+            border-radius: 8px;
+            max-width: 100%;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #6496ff;
+            border: none;
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .btn:hover {
+            background: #4a7dff;
+        }
+
+        .info-box {
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 4px solid #ffd700;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .question {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #6496ff;
+        }
+
+        .question h4 {
+            color: #ffd700;
+            margin-bottom: 15px;
+        }
+
+        .option {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin: 8px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .option:hover {
+            background: rgba(100, 150, 255, 0.2);
+        }
+
+        .option.selected {
+            border-color: #6496ff;
+        }
+
+        .option.correct {
+            background: rgba(50, 205, 50, 0.3);
+            border-color: #32cd32;
+        }
+
+        .option.incorrect {
+            background: rgba(255, 50, 50, 0.3);
+            border-color: #ff3232;
+        }
+
+        .score-display {
+            text-align: center;
+            padding: 30px;
+            background: rgba(100, 150, 255, 0.2);
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .score-display h2 {
+            color: #ffd700;
+            font-size: 2em;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid rgba(100, 150, 255, 0.3);
+            text-align: left;
+        }
+
+        th {
+            background: rgba(100, 150, 255, 0.2);
+            color: #ffd700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌌 Astronomy Laboratory Practice</h1>
+            <p style="color: #a8b2d1;">Interactive Virtual Experiments & Assessment</p>
+        </header>
+
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="showTab('intro')">Introduction</button>
+            <button class="tab-btn" onclick="showTab('lab1')">Lab 1: Planetary Motion</button>
+            <button class="tab-btn" onclick="showTab('lab2')">Lab 2: Moon Phases</button>
+            <button class="tab-btn" onclick="showTab('lab3')">Lab 3: Star Classification</button>
+            <button class="tab-btn" onclick="showTab('assessment')">Assessment</button>
+        </div>
+
+        <!-- Introduction -->
+        <div id="intro" class="tab-content active">
+            <div class="lab-card">
+                <h3>Welcome to Astronomy Laboratory</h3>
+                <p>This virtual laboratory will help you understand fundamental concepts in astronomy through interactive experiments.</p>
+                
+                <div class="info-box">
+                    <h4 style="color: #ffd700;">Learning Objectives:</h4>
+                    <ul>
+                        <li>Understand Kepler's Laws of Planetary Motion</li>
+                        <li>Observe and predict Moon phases</li>
+                        <li>Classify stars based on temperature and luminosity</li>
+                        <li>Calculate astronomical measurements</li>
+                    </ul>
+                </div>
+                
+                <h4 style="color: #ffd700; margin-top: 20px;">Instructions:</h4>
+                <ol style="line-height: 2; color: #a8b2d1;">
+                    <li>Complete each laboratory experiment in sequence</li>
+                    <li>Record your observations and data</li>
+                    <li>After completing all labs, take the final assessment</li>
+                    <li>You need 70% or higher to pass</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Lab 1 -->
+        <div id="lab1" class="tab-content">
+            <div class="lab-card">
+                <h2 style="color: #ffd700;">Lab 1: Kepler's Laws & Planetary Motion</h2>
+                
+                <div class="canvas-container">
+                    <canvas id="planetCanvas" width="600" height="600"></canvas>
+                </div>
+                
+                <div class="controls">
+                    <label style="color: #ffd700;">Speed:</label>
+                    <input type="range" id="speedControl" min="1" max="10" value="5">
+                    <button class="btn" onclick="toggleOrbit()">Play/Pause</button>
+                    <button class="btn" onclick="resetOrbit()">Reset</button>
+                </div>
+                
+                <div class="info-box">
+                    <h4>Kepler's Laws:</h4>
+                    <p><strong>First Law:</strong> Planets orbit in ellipses with the Sun at one focus.</p>
+                    <p><strong>Second Law:</strong> Equal areas in equal times.</p>
+                    <p><strong>Third Law:</strong> P² ∝ a³</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lab 2 -->
+        <div id="lab2" class="tab-content">
+            <div class="lab-card">
+                <h2 style="color: #ffd700;">Lab 2: Lunar Phases</h2>
+                
+                <div class="canvas-container">
+                    <canvas id="moonCanvas" width="600" height="400"></canvas>
+                </div>
+                
+                <div class="controls">
+                    <label style="color: #ffd700;">Moon Position:</label>
+                    <input type="range" id="moonPosition" min="0" max="360" value="0" oninput="updateMoonPhase()">
+                    <span id="phaseLabel" style="color: #ffd700; font-weight: bold;">New Moon</span>
+                </div>
+                
+                <table>
+                    <tr>
+                        <th>Phase</th>
+                        <th>Position</th>
+                        <th>Visibility</th>
+                    </tr>
+                    <tr>
+                        <td>New Moon</td>
+                        <td>0°</td>
+                        <td>Not visible</td>
+                    </tr>
+                    <tr>
+                        <td>First Quarter</td>
+                        <td>90°</td>
+                        <td>Right half</td>
+                    </tr>
+                    <tr>
+                        <td>Full Moon</td>
+                        <td>180°</td>
+                        <td>Fully visible</td>
+                    </tr>
+                    <tr>
+                        <td>Last Quarter</td>
+                        <td>270°</td>
+                        <td>Left half</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Lab 3 -->
+        <div id="lab3" class="tab-content">
+            <div class="lab-card">
+                <h2 style="color: #ffd700;">Lab 3: Hertzsprung-Russell Diagram</h2>
+                
+                <div class="canvas-container">
+                    <canvas id="hrCanvas" width="600" height="500"></canvas>
+                </div>
+                
+                <div class="info-box">
+                    <h4>Stellar Classification:</h4>
+                    <p><strong>Main Sequence:</strong> Hydrogen-fusing stars</p>
+                    <p><strong>Giants:</strong> Large, cool, luminous stars</p>
+                    <p><strong>White Dwarfs:</strong> Small, hot stellar remnants</p>
+                    <p><strong>Spectral Classes:</strong> O - B - A - F - G - K - M (Hot to Cool)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assessment -->
+        <div id="assessment" class="tab-content">
+            <div class="lab-card">
+                <h2 style="color: #ffd700; text-align: center;">Final Assessment - 20 Questions</h2>
+                <p style="text-align: center; color: #a8b2d1; margin-bottom: 30px;">Answer all questions and submit</p>
+                
+                <div id="quizQuestions"></div>
+                
+                <button class="btn" onclick="submitQuiz()" style="display: block; margin: 30px auto; padding: 15px 40px;">Submit Assessment</button>
+                
+                <div id="scoreSection" class="hidden">
+                    <div class="score-display">
+                        <h2 id="finalScore"></h2>
+                        <p id="scoreMessage" style="font-size: 1.2em; margin: 20px 0;"></p>
+                        <button class="btn" onclick="retakeQuiz()">Retake Assessment</button>
+                        <button class="btn" onclick="generateCertificate()" id="certBtn" style="margin-left: 10px; background: #32cd32;">Generate Certificate</button>
+                    </div>
+                </div>
+                
+                <!-- Certificate Section -->
+                <div id="certificateSection" class="hidden">
+                    <div class="lab-card" style="background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(100,150,255,0.1)); border: 3px solid #ffd700; padding: 40px;">
+                        <div style="text-align: center;">
+                            <h1 style="color: #ffd700; font-size: 3em; margin-bottom: 10px;">🌟 Certificate of Completion 🌟</h1>
+                            <div style="height: 3px; background: linear-gradient(90deg, transparent, #ffd700, transparent); margin: 20px 0;"></div>
+                            
+                            <p style="font-size: 1.2em; margin: 20px 0;">This certifies that</p>
+                            
+                            <div style="margin: 30px 0;">
+                                <input type="text" id="studentName" placeholder="Enter Your Name" style="padding: 15px; font-size: 1.5em; text-align: center; background: rgba(255,255,255,0.1); border: 2px solid #6496ff; border-radius: 10px; color: #fff; width: 80%; max-width: 400px;">
+                            </div>
+                            
+                            <p style="font-size: 1.2em; margin: 20px 0;">has successfully completed the</p>
+                            
+                            <h2 style="color: #6496ff; font-size: 2em; margin: 20px 0;">Astronomy Laboratory Practice</h2>
+                            
+                            <p style="font-size: 1.1em; margin: 20px 0;">Including all practical experiments:</p>
+                            <div style="text-align: left; display: inline-block; margin: 20px 0;">
+                                <p>✓ Lab 1: Kepler's Laws & Planetary Motion</p>
+                                <p>✓ Lab 2: Lunar Phases Observation</p>
+                                <p>✓ Lab 3: Hertzsprung-Russell Diagram & Star Classification</p>
+                            </div>
+                            
+                            <div style="margin: 30px 0; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 10px; display: inline-block;">
+                                <p style="font-size: 1.3em; color: #ffd700;">Final Score: <span id="certScore"></span></p>
+                                <p style="font-size: 1.1em; color: #32cd32;" id="certGrade"></p>
+                            </div>
+                            
+                            <p style="margin-top: 30px; color: #a8b2d1;">Date: <span id="certDate"></span></p>
+                            
+                            <div style="margin-top: 40px; display: flex; justify-content: space-around; max-width: 600px; margin-left: auto; margin-right: auto;">
+                                <div>
+                                    <div style="border-top: 2px solid #6496ff; padding-top: 10px; margin-top: 50px;">
+                                        <p style="color: #ffd700;">Laboratory Instructor</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="border-top: 2px solid #6496ff; padding-top: 10px; margin-top: 50px;">
+                                        <p style="color: #ffd700;">Date of Completion</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="btn" onclick="printCertificate()" style="margin-top: 30px; padding: 15px 40px; font-size: 1.1em; background: #6496ff;">🖨️ Print Certificate</button>
+                            <button class="btn" onclick="downloadCertificate()" style="margin-top: 30px; padding: 15px 40px; font-size: 1.1em; background: #32cd32; margin-left: 10px;">📥 Download as Image</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabId === 'lab1') initPlanetSimulation();
+            if (tabId === 'lab2') updateMoonPhase();
+            if (tabId === 'lab3') drawHRDiagram();
+            if (tabId === 'assessment') loadQuiz();
+        }
+
+        // Lab 1: Planetary Motion
+        let angle = 0;
+        let running = true;
+        let animationId;
+        
+        function initPlanetSimulation() {
+            animateOrbit();
+        }
+        
+        function animateOrbit() {
+            if (!running) return;
+            
+            const canvas = document.getElementById('planetCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const cx = 300, cy = 300;
+            const a = 200, b = 150;
+            
+            // Orbit
+            ctx.beginPath();
+            ctx.ellipse(cx, cy, a, b, 0, 0, Math.PI * 2);
+            ctx.strokeStyle = '#6496ff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Sun
+            ctx.beginPath();
+            ctx.arc(cx, cy, 30, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffd700';
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = '#ffd700';
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            
+            // Planet
+            const x = cx + a * Math.cos(angle);
+            const y = cy + b * Math.sin(angle);
+            ctx.beginPath();
+            ctx.arc(x, y, 15, 0, Math.PI * 2);
+            ctx.fillStyle = '#4a90e2';
+            ctx.fill();
+            
+            const speed = document.getElementById('speedControl').value / 100;
+            angle += speed;
+            
+            animationId = requestAnimationFrame(animateOrbit);
+        }
+        
+        function toggleOrbit() {
+            running = !running;
+            if (running) animateOrbit();
+        }
+        
+        function resetOrbit() {
+            angle = 0;
+        }
+
+        // Lab 2: Moon Phases
+        function updateMoonPhase() {
+            const canvas = document.getElementById('moonCanvas');
+            const ctx = canvas.getContext('2d');
+            const ang = parseInt(document.getElementById('moonPosition').value);
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Sun
+            ctx.beginPath();
+            ctx.arc(100, 200, 40, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffd700';
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = '#ffd700';
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            
+            // Earth
+            ctx.beginPath();
+            ctx.arc(300, 200, 50, 0, Math.PI * 2);
+            ctx.fillStyle = '#4a90e2';
+            ctx.fill();
+            
+            // Moon orbit
+            ctx.beginPath();
+            ctx.arc(300, 200, 120, 0, Math.PI * 2);
+            ctx.strokeStyle = '#6496ff';
+            ctx.stroke();
+            
+            // Moon
+            const mx = 300 + 120 * Math.cos(ang * Math.PI / 180);
+            const my = 200 + 120 * Math.sin(ang * Math.PI / 180);
+            
+            ctx.save();
+            ctx.translate(mx, my);
+            ctx.beginPath();
+            ctx.arc(0, 0, 20, 0, Math.PI * 2);
+            ctx.fillStyle = '#ddd';
+            ctx.fill();
+            
+            const phase = (ang + 180) % 360;
+            ctx.beginPath();
+            ctx.arc(0, 0, 20, Math.PI / 2, -Math.PI / 2, phase > 180);
+            ctx.ellipse(0, 0, 20 * Math.cos((phase - 180) * Math.PI / 180), 20, 0, -Math.PI / 2, Math.PI / 2, phase > 180);
+            ctx.fillStyle = '#333';
+            ctx.fill();
+            ctx.restore();
+            
+            // Phase name
+            const phases = [
+                [0, 22, 'New Moon'], [23, 67, 'Waxing Crescent'],
+                [68, 112, 'First Quarter'], [113, 157, 'Waxing Gibbous'],
+                [158, 202, 'Full Moon'], [203, 247, 'Waning Gibbous'],
+                [248, 292, 'Last Quarter'], [293, 360, 'Waning Crescent']
+            ];
+            const p = phases.find(p => ang >= p[0] && ang <= p[1]);
+            document.getElementById('phaseLabel').textContent = p[2];
+        }
+
+        // Lab 3: HR Diagram
+        function drawHRDiagram() {
+            const canvas = document.getElementById('hrCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Axes
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(50, 450);
+            ctx.lineTo(550, 450);
+            ctx.lineTo(550, 50);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(50, 450);
+            ctx.lineTo(50, 50);
+            ctx.stroke();
+            
+            ctx.fillStyle = '#fff';
+            ctx.font = '14px Arial';
+            ctx.fillText('Temperature (K)', 220, 480);
+            ctx.save();
+            ctx.translate(20, 250);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Luminosity', 0, 0);
+            ctx.restore();
+            
+            // Stars
+            const stars = [
+                [100, 150, 8, '#9bb0ff', 'Supergiant'],
+                [150, 350, 6, '#aabfff', 'Blue MS'],
+                [300, 380, 5, '#ffd700', 'Sun'],
+                [450, 400, 4, '#ffcc6f', 'Red MS'],
+                [500, 200, 10, '#ff6347', 'Red Giant'],
+                [80, 420, 3, '#fff', 'White Dwarf']
+            ];
+            
+            stars.forEach(s => {
+                ctx.beginPath();
+                ctx.arc(s[0], s[1], s[2], 0, Math.PI * 2);
+                ctx.fillStyle = s[3];
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = s[3];
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = '#fff';
+                ctx.font = '10px Arial';
+                ctx.fillText(s[4], s[0] + 12, s[1]);
+            });
+        }
+
+        // Quiz Data
+        const quiz = [
+            {q: "What is Kepler's First Law?", o: ["Planets orbit in circles", "Planets orbit in ellipses with Sun at one focus", "Planets orbit at constant speed", "Planets orbit randomly"], c: 1},
+            {q: "When does a planet move fastest?", o: ["At aphelion", "At perihelion", "At midpoint", "Speed is constant"], c: 1},
+            {q: "What shape is a planetary orbit?", o: ["Circle", "Ellipse", "Parabola", "Hyperbola"], c: 1},
+            {q: "During New Moon, where is the Moon?", o: ["Behind Earth", "Between Earth and Sun", "Opposite side of Earth", "Above Earth"], c: 1},
+            {q: "How long is a lunar orbit?", o: ["24 hours", "7 days", "27.3 days", "365 days"], c: 2},
+            {q: "Which phase shows right half lit?", o: ["New Moon", "Full Moon", "First Quarter", "Last Quarter"], c: 2},
+            {q: "What causes moon phases?", o: ["Earth's shadow", "Moon's orbit position", "Sun's movement", "Earth's rotation"], c: 1},
+            {q: "Hottest spectral class?", o: ["M", "G", "A", "O"], c: 3},
+            {q: "What spectral class is the Sun?", o: ["O", "G", "M", "A"], c: 1},
+            {q: "What is a white dwarf?", o: ["Young star", "Stellar remnant", "Planet", "Galaxy"], c: 1},
+            {q: "Where are main sequence stars on HR diagram?", o: ["Upper right", "Lower left", "Diagonal upper-left to lower-right", "Random"], c: 2},
+            {q: "Coolest star color?", o: ["Blue", "White", "Yellow", "Red"], c: 3},
+            {q: "What is 1 AU?", o: ["Moon orbit", "Earth-Sun distance", "Jupiter orbit", "Galaxy size"], c: 1},
+            {q: "Longest orbital period?", o: ["Mercury", "Earth", "Neptune", "Mars"], c: 2},
+            {q: "Red giants are:", o: ["Small and hot", "Large and cool", "Small and cool", "Large and hot"], c: 1},
+            {q: "HR diagram plots:", o: ["Age vs size", "Temperature vs luminosity", "Distance vs brightness", "Mass vs radius"], c: 1},
+            {q: "During lunar eclipse:", o: ["Moon blocks Sun", "Earth's shadow on Moon", "Sun blocks Moon", "Moon disappears"], c: 1},
+            {q: "What is the ecliptic?", o: ["Moon's orbit", "Earth's orbital plane", "Sun's rotation", "A constellation"], c: 1},
+            {q: "Synodic month length?", o: ["27.3 days", "29.5 days", "30 days", "28 days"], c: 1},
+            {q: "Kepler's Third Law relates:", o: ["Speed and distance", "Period squared and radius cubed", "Mass and luminosity", "Temperature and color"], c: 1}
+        ];
+
+        function loadQuiz() {
+            const container = document.getElementById('quizQuestions');
+            container.innerHTML = '';
+            quiz.forEach((item, i) => {
+                const div = document.createElement('div');
+                div.className = 'question';
+                div.innerHTML = `<h4>Question ${i + 1}: ${item.q}</h4>`;
+                item.o.forEach((opt, j) => {
+                    const odiv = document.createElement('div');
+                    odiv.className = 'option';
+                    odiv.onclick = () => selectOption(i, j);
+                    odiv.innerHTML = `<input type="radio" name="q${i}" value="${j}"> ${opt}`;
+                    div.appendChild(odiv);
+                });
+                container.appendChild(div);
+            });
+        }
+
+        function selectOption(qi, oi) {
+            const opts = document.querySelectorAll(`.question:nth-child(${qi + 1}) .option`);
+            opts.forEach(o => o.classList.remove('selected'));
+            opts[oi].classList.add('selected');
+            document.querySelector(`input[name="q${qi}"][value="${oi}"]`).checked = true;
+        }
+
+        function submitQuiz() {
+            let score = 0;
+            let answered = 0;
+            
+            quiz.forEach((item, i) => {
+                const sel = document.querySelector(`input[name="q${i}"]:checked`);
+                if (sel) {
+                    answered++;
+                    const opts = document.querySelectorAll(`.question:nth-child(${i + 1}) .option`);
+                    const si = parseInt(sel.value);
+                    if (si === item.c) {
+                        score++;
+                        opts[si].classList.add('correct');
+                    } else {
+                        opts[si].classList.add('incorrect');
+                        opts[item.c].classList.add('correct');
+                    }
+                }
+            });
+            
+            if (answered < quiz.length) {
+                alert(`Please answer all ${quiz.length} questions! (${answered} answered)`);
+                return;
+            }
+            
+            const pct = (score / quiz.length) * 100;
+            document.getElementById('finalScore').textContent = `Score: ${score}/${quiz.length} (${pct.toFixed(1)}%)`;
+            
+            let msg = pct >= 90 ? '🌟 Excellent! Outstanding Performance!' : 
+                      pct >= 80 ? '⭐ Great Job! Very Good!' : 
+                      pct >= 70 ? '✓ Good Work! You Passed!' : 
+                      pct >= 60 ? '📚 Fair - Review and Retry' : 
+                      '📖 Please Study More and Retake';
+            
+            document.getElementById('scoreMessage').textContent = msg;
+            document.getElementById('scoreSection').classList.remove('hidden');
+            
+            // Show certificate button only if passed
+            if (pct >= 70) {
+                document.getElementById('certBtn').style.display = 'inline-block';
+            } else {
+                document.getElementById('certBtn').style.display = 'none';
+            }
+            
+            document.getElementById('scoreSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function generateCertificate() {
+            const score = document.getElementById('finalScore').textContent;
+            const pct = parseFloat(score.match(/\(([0-9.]+)%\)/)[1]);
+            
+            document.getElementById('certScore').textContent = score;
+            
+            let grade = pct >= 90 ? 'Grade: A - Excellent' : 
+                        pct >= 80 ? 'Grade: B - Very Good' : 
+                        'Grade: C - Good';
+            document.getElementById('certGrade').textContent = grade;
+            
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('certDate').textContent = dateStr;
+            
+            document.getElementById('certificateSection').classList.remove('hidden');
+            document.getElementById('certificateSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function printCertificate() {
+            const name = document.getElementById('studentName').value;
+            if (!name.trim()) {
+                alert('Please enter your name first!');
+                return;
+            }
+            window.print();
+        }
+
+        function downloadCertificate() {
+            const name = document.getElementById('studentName').value;
+            if (!name.trim()) {
+                alert('Please enter your name first!');
+                return;
+            }
+            alert('To download: Use your browser\'s Print function and select "Save as PDF"');
+            window.print();
+        }
+
+        function retakeQuiz() {
+            document.getElementById('scoreSection').classList.add('hidden');
+            document.getElementById('certificateSection').classList.add('hidden');
+            loadQuiz();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meteorology Lab - Weather & Climate Experiments</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .tab-btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .experiment-section {
+            display: none;
+        }
+
+        .experiment-section.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .experiment-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #667eea;
+        }
+
+        .experiment-title {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .media-container {
+            margin: 20px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .media-container img,
+        .media-container video {
+            width: 100%;
+            display: block;
+        }
+
+        .experiment-description {
+            line-height: 1.8;
+            color: #444;
+            margin-bottom: 20px;
+        }
+
+        .materials,
+        .procedure {
+            margin: 20px 0;
+        }
+
+        .section-title {
+            color: #764ba2;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .materials ul,
+        .procedure ol {
+            margin-left: 20px;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        .materials li,
+        .procedure li {
+            margin-bottom: 8px;
+        }
+
+        .quiz-section {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .question {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .question-text {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .option {
+            padding: 10px 15px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option:hover {
+            background: #e0e0e0;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: #667eea;
+            color: white;
+        }
+
+        .option.correct {
+            background: #4caf50;
+            color: white;
+        }
+
+        .option.incorrect {
+            background: #f44336;
+            color: white;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #667eea;
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+        }
+
+        .weather-simulator {
+            background: linear-gradient(to bottom, #87ceeb, #f0f8ff);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+            min-height: 300px;
+        }
+
+        .cloud {
+            position: absolute;
+            background: white;
+            border-radius: 50px;
+            opacity: 0.8;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            from { left: -100px; }
+            to { left: calc(100% + 100px); }
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #667eea;
+            transition: all 0.3s;
+        }
+
+        .control-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .sun {
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #ffd700, #ffa500);
+            border-radius: 50%;
+            position: absolute;
+            top: 30px;
+            right: 50px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+            animation: pulse 3s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .rain {
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background: linear-gradient(to bottom, transparent, #4a90e2);
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            from { top: -20px; }
+            to { top: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌤️ Meteorology Lab</h1>
+            <p class="subtitle">Interactive Weather and Climate Experiments</p>
+        </header>
+
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="showTab('water-cycle')">Water Cycle</button>
+            <button class="tab-btn" onclick="showTab('greenhouse')">Greenhouse Effect</button>
+            <button class="tab-btn" onclick="showTab('cloud-formation')">Cloud Formation</button>
+            <button class="tab-btn" onclick="showTab('air-pressure')">Air Pressure</button>
+            <button class="tab-btn" onclick="showTab('weather-simulator')">Weather Simulator</button>
+            <button class="tab-btn" onclick="showTab('quiz')">Quiz</button>
+        </div>
+
+        <!-- Water Cycle Experiment -->
+        <div id="water-cycle" class="experiment-section active">
+            <div class="experiment-card">
+                <h2 class="experiment-title">💧 Water Cycle in a Bag</h2>
+                
+                <div class="media-container">
+                    <svg width="100%" height="300" viewBox="0 0 800 300">
+                        <!-- Background -->
+                        <rect width="800" height="300" fill="#e3f2fd"/>
+                        
+                        <!-- Sun -->
+                        <circle cx="700" cy="60" r="40" fill="#ffd700"/>
+                        <line x1="700" y1="20" x2="700" y2="0" stroke="#ffd700" stroke-width="3"/>
+                        <line x1="740" y1="60" x2="760" y2="60" stroke="#ffd700" stroke-width="3"/>
+                        <line x1="660" y1="60" x2="640" y2="60" stroke="#ffd700" stroke-width="3"/>
+                        
+                        <!-- Clouds -->
+                        <ellipse cx="200" cy="50" rx="60" ry="30" fill="#90caf9"/>
+                        <ellipse cx="230" cy="50" rx="50" ry="25" fill="#90caf9"/>
+                        <ellipse cx="170" cy="50" rx="40" ry="20" fill="#90caf9"/>
+                        
+                        <!-- Rain -->
+                        <line x1="180" y1="80" x2="170" y2="120" stroke="#2196f3" stroke-width="2"/>
+                        <line x1="200" y1="80" x2="190" y2="120" stroke="#2196f3" stroke-width="2"/>
+                        <line x1="220" y1="80" x2="210" y2="120" stroke="#2196f3" stroke-width="2"/>
+                        
+                        <!-- Ground and Water -->
+                        <rect x="0" y="250" width="800" height="50" fill="#8d6e63"/>
+                        <ellipse cx="150" cy="200" rx="80" ry="20" fill="#1976d2"/>
+                        
+                        <!-- Evaporation arrows -->
+                        <path d="M 150 200 Q 200 150 250 100" stroke="#ff9800" stroke-width="3" fill="none" stroke-dasharray="5,5">
+                            <animate attributeName="stroke-dashoffset" from="0" to="20" dur="2s" repeatCount="indefinite"/>
+                        </path>
+                        
+                        <!-- Mountains -->
+                        <polygon points="600,250 700,150 800,250" fill="#795548"/>
+                        <polygon points="450,250 550,180 650,250" fill="#8d6e63"/>
+                        
+                        <!-- Labels -->
+                        <text x="250" y="110" font-size="16" fill="#333" font-weight="bold">Condensation</text>
+                        <text x="170" y="140" font-size="16" fill="#333" font-weight="bold">Precipitation</text>
+                        <text x="280" y="170" font-size="16" fill="#333" font-weight="bold">Evaporation</text>
+                        <text x="100" y="220" font-size="16" fill="#333" font-weight="bold">Collection</text>
+                    </svg>
+                </div>
+
+                <div class="experiment-description">
+                    <p>The water cycle is the continuous movement of water on, above, and below Earth's surface. This simple experiment demonstrates evaporation, condensation, and precipitation in action!</p>
+                </div>
+
+                <div class="materials">
+                    <h3 class="section-title">Materials Needed:</h3>
+                    <ul>
+                        <li>Clear plastic ziplock bag</li>
+                        <li>Water (colored with blue food coloring)</li>
+                        <li>Permanent marker</li>
+                        <li>Tape</li>
+                        <li>Sunny window</li>
+                    </ul>
+                </div>
+
+                <div class="procedure">
+                    <h3 class="section-title">Procedure:</h3>
+                    <ol>
+                        <li>Draw a simple water cycle diagram on the bag with the marker</li>
+                        <li>Pour about 1/4 cup of water (with blue food coloring) into the bag</li>
+                        <li>Seal the bag tightly, removing as much air as possible</li>
+                        <li>Tape the bag to a sunny window</li>
+                        <li>Observe changes over several hours and days</li>
+                        <li>Notice water droplets forming at the top (condensation)</li>
+                        <li>Watch as droplets fall back down (precipitation)</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Greenhouse Effect Experiment -->
+        <div id="greenhouse" class="experiment-section">
+            <div class="experiment-card">
+                <h2 class="experiment-title">🌡️ Greenhouse Effect Demonstration</h2>
+                
+                <div class="media-container">
+                    <svg width="100%" height="350" viewBox="0 0 800 350">
+                        <!-- Sky -->
+                        <rect width="800" height="350" fill="#bbdefb"/>
+                        
+                        <!-- Sun rays -->
+                        <g id="sunrays">
+                            <line x1="400" y1="30" x2="350" y2="100" stroke="#ffa726" stroke-width="3"/>
+                            <line x1="400" y1="30" x2="400" y2="100" stroke="#ffa726" stroke-width="3"/>
+                            <line x1="400" y1="30" x2="450" y2="100" stroke="#ffa726" stroke-width="3"/>
+                        </g>
+                        
+                        <!-- Left jar (no cover) -->
+                        <rect x="100" y="200" width="150" height="130" fill="none" stroke="#666" stroke-width="3"/>
+                        <rect x="100" y="330" width="150" height="20" fill="#8d6e63"/>
+                        <circle cx="175" cy="310" r="15" fill="#ff5722"/>
+                        <text x="150" y="370" font-size="14" fill="#333" text-anchor="middle">No Cover</text>
+                        <text x="150" y="390" font-size="18" fill="#f44336" font-weight="bold" text-anchor="middle">20°C</text>
+                        
+                        <!-- Right jar (with cover) -->
+                        <rect x="550" y="200" width="150" height="130" fill="none" stroke="#666" stroke-width="3"/>
+                        <rect x="545" y="195" width="160" height="10" fill="#666" opacity="0.7"/>
+                        <rect x="550" y="330" width="150" height="20" fill="#8d6e63"/>
+                        <circle cx="625" cy="310" r="15" fill="#ff5722"/>
+                        <text x="600" y="370" font-size="14" fill="#333" text-anchor="middle">With Cover</text>
+                        <text x="600" y="390" font-size="18" fill="#f44336" font-weight="bold" text-anchor="middle">28°C</text>
+                        
+                        <!-- Heat waves in covered jar -->
+                        <path d="M 570 220 Q 580 240 570 260" stroke="#ff9800" stroke-width="2" fill="none"/>
+                        <path d="M 600 230 Q 610 250 600 270" stroke="#ff9800" stroke-width="2" fill="none"/>
+                        <path d="M 630 220 Q 640 240 630 260" stroke="#ff9800" stroke-width="2" fill="none"/>
+                        
+                        <!-- Title -->
+                        <text x="400" y="30" font-size="24" fill="#333" font-weight="bold" text-anchor="middle">Greenhouse Effect</text>
+                        
+                        <!-- Arrows showing trapped heat -->
+                        <path d="M 625 250 L 625 220" stroke="#ff5722" stroke-width="2" marker-end="url(#arrowred)"/>
+                        <path d="M 625 220 L 625 250" stroke="#ff5722" stroke-width="2" marker-end="url(#arrowred)"/>
+                        
+                        <defs>
+                            <marker id="arrowred" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                                <path d="M 0 0 L 10 5 L 0 10 Z" fill="#ff5722"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+
+                <div class="experiment-description">
+                    <p>The greenhouse effect is a natural process that warms Earth's surface. This experiment demonstrates how certain gases trap heat, similar to how greenhouse gases work in our atmosphere.</p>
+                </div>
+
+                <div class="materials">
+                    <h3 class="section-title">Materials Needed:</h3>
+                    <ul>
+                        <li>Two identical glass jars</li>
+                        <li>Two thermometers</li>
+                        <li>Plastic wrap or glass lid</li>
+                        <li>Lamp or sunlight</li>
+                        <li>Timer or watch</li>
+                    </ul>
+                </div>
+
+                <div class="procedure">
+                    <h3 class="section-title">Procedure:</h3>
+                    <ol>
+                        <li>Place a thermometer in each jar</li>
+                        <li>Cover one jar tightly with plastic wrap or a lid</li>
+                        <li>Leave the other jar open</li>
+                        <li>Place both jars in direct sunlight or under a lamp</li>
+                        <li>Record the starting temperature in both jars</li>
+                        <li>Wait 30 minutes and record temperatures again</li>
+                        <li>Observe which jar gets warmer and discuss why</li>
+                        <li>The covered jar represents Earth's atmosphere trapping heat</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cloud Formation Experiment -->
+        <div id="cloud-formation" class="experiment-section">
+            <div class="experiment-card">
+                <h2 class="experiment-title">☁️ Cloud in a Jar</h2>
+                
+                <div class="media-container">
+                    <svg width="100%" height="400" viewBox="0 0 800 400">
+                        <!-- Background -->
+                        <rect width="800" height="400" fill="#e1f5fe"/>
+                        
+                        <!-- Title -->
+                        <text x="400" y="40" font-size="28" fill="#333" font-weight="bold" text-anchor="middle">Cloud Formation Process</text>
+                        
+                        <!-- Step 1 -->
+                        <g id="step1">
+                            <rect x="50" y="80" width="150" height="200" fill="none" stroke="#666" stroke-width="3" rx="10"/>
+                            <rect x="50" y="280" width="150" height="20" fill="#1976d2"/>
+                            <text x="125" y="330" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">1. Hot Water</text>
+                        </g>
+                        
+                        <!-- Step 2 -->
+                        <g id="step2">
+                            <rect x="250" y="80" width="150" height="200" fill="none" stroke="#666" stroke-width="3" rx="10"/>
+                            <rect x="250" y="280" width="150" height="20" fill="#1976d2"/>
+                            <!-- Ice -->
+                            <rect x="280" y="60" width="90" height="25" fill="#b3e5fc" stroke="#01579b" stroke-width="2" rx="5"/>
+                            <text x="325" y="330" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">2. Add Ice on Top</text>
+                        </g>
+                        
+                        <!-- Step 3 -->
+                        <g id="step3">
+                            <rect x="450" y="80" width="150" height="200" fill="none" stroke="#666" stroke-width="3" rx="10"/>
+                            <rect x="450" y="280" width="150" height="20" fill="#1976d2"/>
+                            <rect x="480" y="60" width="90" height="25" fill="#b3e5fc" stroke="#01579b" stroke-width="2" rx="5"/>
+                            <!-- Match -->
+                            <line x1="525" y1="250" x2="525" y2="270" stroke="#8d6e63" stroke-width="3"/>
+                            <circle cx="525" cy="248" r="5" fill="#ff5722"/>
+                            <text x="525" y="330" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">3. Add Smoke</text>
+                        </g>
+                        
+                        <!-- Step 4 -->
+                        <g id="step4">
+                            <rect x="650" y="80" width="150" height="200" fill="#e0e0e0" fill-opacity="0.6" stroke="#666" stroke-width="3" rx="10"/>
+                            <rect x="650" y="280" width="150" height="20" fill="#1976d2"/>
+                            <rect x="680" y="60" width="90" height="25" fill="#b3e5fc" stroke="#01579b" stroke-width="2" rx="5"/>
+                            
+                            <!-- Cloud formation -->
+                            <ellipse cx="725" cy="150" rx="50" ry="30" fill="white" opacity="0.8"/>
+                            <ellipse cx="700" cy="160" rx="35" ry="25" fill="white" opacity="0.8"/>
+                            <ellipse cx="750" cy="160" rx="35" ry="25" fill="white" opacity="0.8"/>
+                            
+                            <text x="725" y="330" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">4. Cloud Forms!</text>
+                        </g>
+                        
+                        <!-- Arrows between steps -->
+                        <path d="M 205 180 L 245 180" stroke="#667eea" stroke-width="3" marker-end="url(#arrow)"/>
+                        <path d="M 405 180 L 445 180" stroke="#667eea" stroke-width="3" marker-end="url(#arrow)"/>
+                        <path d="M 605 180 L 645 180" stroke="#667eea" stroke-width="3" marker-end="url(#arrow)"/>
+                        
+                        <defs>
+                            <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <path d="M 0 0 L 0 6 L 9 3 Z" fill="#667eea"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+
+                <div class="experiment-description">
+                    <p>Clouds form when water vapor in the air cools and condenses around tiny particles. This experiment recreates the cloud formation process in a jar!</p>
+                </div>
+
+                <div class="materials">
+                    <h3 class="section-title">Materials Needed:</h3>
+                    <ul>
+                        <li>Large glass jar with lid</li>
+                        <li>Hot water (boiling)</li>
+                        <li>Ice cubes</li>
+                        <li>Metal tray or plate</li>
+                        <li>Matches or incense stick</li>
+                        <li>Black paper (for background)</li>
+                    </ul>
+                </div>
+
+                <div class="procedure">
+                    <h3 class="section-title">Procedure:</h3>
+                    <ol>
+                        <li>Pour hot water into the jar (about 2 inches deep)</li>
+                        <li>Place the metal tray with ice cubes on top of the jar</li>
+                        <li>Wait a moment, then remove the tray briefly</li>
+                        <li>Light a match, blow it out, and drop it into the jar</li>
+                        <li>Quickly replace the ice-covered tray on top</li>
+                        <li>Watch as a cloud forms inside the jar!</li>
+                        <li>Place black paper behind the jar for better visibility</li>
+                        <li>Observe: warm air rises, cools, and condenses around smoke particles</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Air Pressure Experiment -->
+        <div id="air-pressure" class="experiment-section">
+            <div class="experiment-card">
+                <h2 class="experiment-title">🎈 Air Pressure Magic</h2>
+                
+                <div class="media-container">
+                    <svg width="100%" height="300" viewBox="0 0 800 300">
+                        <!-- Background -->
+                        <rect width="800" height="300" fill="#fff3e0"/>
+                        
+                        <!-- Bottle with egg -->
+                        <g id="bottle">
+                            <!-- Bottle -->
+                            <rect x="300" y="120" width="100" height="150" fill="#e3f2fd" stroke="#1976d2" stroke-width="3" rx="10"/>
+                            <ellipse cx="350" cy="120" rx="50" ry="15" fill="#bbdefb" stroke="#1976d2" stroke-width="3"/>
+                            
+                            <!-- Bottle neck -->
+                            <rect x="325" y="100" width="50" height="25" fill="#e3f2fd" stroke="#1976d2" stroke-width="3"/>
+                            <ellipse cx="350" cy="100" rx="25" ry="10" fill="#bbdefb" stroke="#1976d2" stroke-width="3"/>
+                            
+                            <!-- Egg on top -->
+                            <ellipse cx="350" cy="85" rx="30" ry="40" fill="#fff" stroke="#ffa726" stroke-width="2"/>
+                            
+                            <!-- Fire inside bottle -->
+                            <ellipse cx="350" cy="200" rx="25" ry="35" fill="#ff9800" opacity="0.7"/>
+                            <ellipse cx="350" cy="205" rx="20" ry="25" fill="#ffc107" opacity="0.8"/>
+                            <ellipse cx="350" cy="210" rx="15" ry="15" fill="#ffeb3b"/>
+                        </g>
+                        
+                        <!-- Arrows showing air pressure -->
+                        <g id="arrows">
+                            <path d="M 250 150 L 290 150" stroke="#f44336" stroke-width="3" marker-end="url(#arrowpressure)"/>
+                            <path d="M 450 150 L 410 150" stroke="#f44336" stroke-width="3" marker-end="url(#arrowpressure)"/>
+                            <path d="M 350 50 L 350 75" stroke="#f44336" stroke-width="3" marker-end="url(#arrowpressure)"/>
+                            
+                            <text x="200" y="145" font-size="16" fill="#f44336" font-weight="bold">High Pressure</text>
+                            <text x="460" y="145" font-size="16" fill="#f44336" font-weight="bold">High Pressure</text>
+                            <text x="365" y="45" font-size="16" fill="#f44336" font-weight="bold">Pushes Egg In</text>
+                        </g>
+                        
+                        <!-- Labels -->
+                        <text x="400" y="30" font-size="24" fill="#333" font-weight="bold" text-anchor="middle">Egg in a Bottle</text>
+                        <text x="350" y="295" font-size="14" fill="#666" text-anchor="middle">Air pressure pushes the egg into the bottle!</text>
+                        
+                        <defs>
+                            <marker id="arrowpressure" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <path d="M 0 0 L 0 6 L 9 3 Z" fill="#f44336"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+
+                <div class="experiment-description">
+                    <p>Air pressure is the force exerted by air molecules. Changes in air pressure drive weather patterns and can create fascinating demonstrations like the classic egg-in-a-bottle experiment!</p>
+                </div>
+
+                <div class="materials">
+                    <h3 class="section-title">Materials Needed:</h3>
+                    <ul>
+                        <li>Glass bottle with narrow neck</li>
+                        <li>Hard-boiled egg (peeled)</li>
+                        <li>Paper strip</li>
+                        <li>Matches or lighter</li>
+                        <li>Adult supervision required</li>
+                    </ul>
+                </div>
+
+                <div class="procedure">
+                    <h3 class="section-title">Procedure:</h3>
+                    <ol>
+                        <li>Ensure the egg can sit on the bottle opening but not fall in</li>
+                        <li>Light a small piece of paper and drop it into the bottle</li>
+                        <li>Quickly place the egg on the bottle opening</li>
+                        <li>Watch as the fire consumes oxygen and cools the air inside</li>
+                        <li>Observe the egg being sucked into the bottle!</li>
+                        <li>Explanation: Air pressure outside is greater than inside, pushing the egg in</li>
+                        <li>To remove: Turn bottle upside down and blow hard into it</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weather Simulator -->
+        <div id="weather-simulator" class="experiment-section">
+            <div class="experiment-card">
+                <h2 class="experiment-title">🌦️ Interactive Weather Simulator</h2>
+                
+                <div class="weather-simulator" id="weatherSim">
+                    <div class="sun" id="sun"></div>
+                    <div id="weatherDisplay"></div>
+                </div>
+
+                <div class="controls">
+                    <button class="control-btn" onclick="setWeather('sunny')">☀️ Sunny</button>
+                    <button class="control-btn" onclick="setWeather('cloudy')">☁️ Cloudy</button>
+                    <button class="control-btn" onclick="setWeather('rainy')">🌧️ Rainy</button>
+                    <button class="control-btn" onclick="setWeather('stormy')">⛈️ Stormy</button>
+                    <button class="control-btn" onclick="setWeather('snowy')">❄️ Snowy</button>
+                </div>
+
+                <div class="experiment-description" style="margin-top: 20px;">
+                    <p><strong>Current Weather:</strong> <span id="weatherInfo">Sunny - Clear skies with bright sunshine</span></p>
+                    <p><strong>Temperature:</strong> <span id="tempInfo">25°C</span></p>
+                    <p><strong>Conditions:</strong> <span id="conditionInfo">Perfect day for outdoor activities!</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Section -->
+        <div id="quiz" class="experiment-section">
+            <div class="experiment-card">
+                <h2 class="experiment-title">🧠 Meteorology Quiz</h2>
+                <p class="experiment-description">Test your knowledge about weather and climate! Answer all questions and submit to see your score.</p>
+                
+                <div class="quiz-section" id="quizContainer">
+                    <!-- Questions will be generated by JavaScript -->
+                </div>
+                
+                <button class="submit-btn" onclick="submitQuiz()">Submit Quiz</button>
+                <div id="scoreDisplay" class="score-display" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Quiz Questions
+        const quizQuestions = [
+            {
+                question: "What are the three main stages of the water cycle?",
+                options: ["Evaporation, Condensation, Precipitation", "Freezing, Melting, Boiling", "Rising, Falling, Flowing", "Heating, Cooling, Warming"],
+                correct: 0
+            },
+            {
+                question: "What causes clouds to form?",
+                options: ["Water vapor cooling and condensing", "Air becoming warmer", "Wind blowing strongly", "Sun heating the ground"],
+                correct: 0
+            },
+            {
+                question: "Which greenhouse gas is most abundant in Earth's atmosphere?",
+                options: ["Oxygen", "Carbon dioxide", "Water vapor", "Methane"],
+                correct: 2
+            },
+            {
+                question: "What is the name of the instrument used to measure air pressure?",
+                options: ["Thermometer", "Barometer", "Anemometer", "Hygrometer"],
+                correct: 1
+            },
+            {
+                question: "What type of cloud produces thunderstorms?",
+                options: ["Cirrus", "Stratus", "Cumulus", "Cumulonimbus"],
+                correct: 3
+            },
+            {
+                question: "What causes wind?",
+                options: ["Earth's rotation only", "Differences in air pressure", "Ocean currents", "Gravity pulling air down"],
+                correct: 1
+            },
+            {
+                question: "At what temperature does water freeze at sea level?",
+                options: ["0°C", "-10°C", "5°C", "32°C"],
+                correct: 0
+            },
+            {
+                question: "What is the process called when water vapor turns directly into ice?",
+                options: ["Freezing", "Condensation", "Deposition", "Sublimation"],
+                correct: 2
+            },
+            {
+                question: "Which layer of Earth's atmosphere do we live in?",
+                options: ["Stratosphere", "Troposphere", "Mesosphere", "Thermosphere"],
+                correct: 1
+            },
+            {
+                question: "What is humidity?",
+                options: ["Amount of rain falling", "Temperature of the air", "Amount of water vapor in the air", "Speed of the wind"],
+                correct: 2
+            },
+            {
+                question: "What causes the greenhouse effect?",
+                options: ["Gases trapping heat in the atmosphere", "Plants growing everywhere", "Too much sunlight", "Cold ocean water"],
+                correct: 0
+            },
+            {
+                question: "What is precipitation?",
+                options: ["Water evaporating", "Water falling from clouds", "Water flowing in rivers", "Water freezing"],
+                correct: 1
+            },
+            {
+                question: "Which direction do hurricanes spin in the Northern Hemisphere?",
+                options: ["Clockwise", "Counter-clockwise", "They don't spin", "Randomly"],
+                correct: 1
+            },
+            {
+                question: "What is the dew point?",
+                options: ["Hottest temperature of the day", "Temperature at which air becomes saturated with moisture", "Point where rain starts", "Middle of the day"],
+                correct: 1
+            },
+            {
+                question: "What causes seasons on Earth?",
+                options: ["Distance from the Sun", "Earth's tilt on its axis", "Ocean temperatures", "Amount of clouds"],
+                correct: 1
+            },
+            {
+                question: "What is an anemometer used to measure?",
+                options: ["Temperature", "Wind speed", "Air pressure", "Humidity"],
+                correct: 1
+            },
+            {
+                question: "What is the term for rain that freezes before hitting the ground?",
+                options: ["Hail", "Sleet", "Snow", "Drizzle"],
+                correct: 1
+            },
+            {
+                question: "What type of front brings the most severe weather?",
+                options: ["Warm front", "Cold front", "Stationary front", "Occluded front"],
+                correct: 1
+            },
+            {
+                question: "What is the jet stream?",
+                options: ["A fast-flowing river of air high in the atmosphere", "Water vapor from jets", "A type of cloud", "Wind at ground level"],
+                correct: 0
+            },
+            {
+                question: "What percentage of Earth's atmosphere is nitrogen?",
+                options: ["21%", "50%", "78%", "90%"],
+                correct: 2
+            },
+            {
+                question: "What is El Niño?",
+                options: ["A type of storm", "Warming of Pacific Ocean waters", "A wind pattern", "A cloud formation"],
+                correct: 1
+            },
+            {
+                question: "What is the primary gas that causes acid rain?",
+                options: ["Oxygen", "Nitrogen", "Sulfur dioxide", "Carbon dioxide"],
+                correct: 2
+            },
+            {
+                question: "At what altitude are cirrus clouds typically found?",
+                options: ["Near ground level", "2-7 km", "Above 6 km", "In the stratosphere"],
+                correct: 2
+            },
+            {
+                question: "What is convection in meteorology?",
+                options: ["Movement of air due to temperature differences", "Formation of clouds", "Wind direction", "Amount of rainfall"],
+                correct: 0
+            },
+            {
+                question: "What is a tornado's rating based on?",
+                options: ["Size of the tornado", "Damage caused", "Wind speed measured", "Duration of tornado"],
+                correct: 1
+            },
+            {
+                question: "What is the Coriolis effect?",
+                options: ["Earth's rotation affecting wind patterns", "Sun heating the Earth", "Ocean currents changing", "Mountains blocking wind"],
+                correct: 0
+            },
+            {
+                question: "What is a cold front?",
+                options: ["Cold air mass replacing warm air", "Temperature drop at night", "Winter approaching", "Snow falling"],
+                correct: 0
+            },
+            {
+                question: "What causes lightning?",
+                options: ["Clouds rubbing together", "Electrical discharge between clouds and ground", "Heavy rain", "Strong winds"],
+                correct: 1
+            },
+            {
+                question: "What is the primary cause of tides?",
+                options: ["Wind", "Earth's rotation", "Moon's gravitational pull", "Ocean temperature"],
+                correct: 2
+            },
+            {
+                question: "What is climate?",
+                options: ["Today's weather", "Long-term weather patterns", "Temperature only", "Amount of rain in a year"],
+                correct: 1
+            }
+        ];
+
+        let selectedAnswers = {};
+
+        // Generate quiz questions
+        function generateQuiz() {
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = '';
+            
+            // Randomly select 25 questions
+            const selectedQuestions = [...quizQuestions].sort(() => 0.5 - Math.random()).slice(0, 25);
+            
+            selectedQuestions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.innerHTML = `
+                    <div class="question-text">${index + 1}. ${q.question}</div>
+                    <div class="options">
+                        ${q.options.map((opt, i) => `
+                            <div class="option" onclick="selectOption(${index}, ${i}, ${q.correct})" id="q${index}opt${i}">
+                                ${opt}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(questionDiv);
+            });
+        }
+
+        function selectOption(questionIndex, optionIndex, correctIndex) {
+            // Remove previous selection
+            for (let i = 0; i < 4; i++) {
+                const opt = document.getElementById(`q${questionIndex}opt${i}`);
+                if (opt) {
+                    opt.classList.remove('selected');
+                }
+            }
+            
+            // Add selection to clicked option
+            const selected = document.getElementById(`q${questionIndex}opt${optionIndex}`);
+            if (selected) {
+                selected.classList.add('selected');
+                selectedAnswers[questionIndex] = {selected: optionIndex, correct: correctIndex};
+            }
+        }
+
+        function submitQuiz() {
+            let correct = 0;
+            let total = Object.keys(selectedAnswers).length;
+            
+            if (total === 0) {
+                alert('Please answer at least one question before submitting!');
+                return;
+            }
+            
+            // Show correct/incorrect answers
+            Object.keys(selectedAnswers).forEach(qIndex => {
+                const answer = selectedAnswers[qIndex];
+                const selectedOpt = document.getElementById(`q${qIndex}opt${answer.selected}`);
+                const correctOpt = document.getElementById(`q${qIndex}opt${answer.correct}`);
+                
+                if (answer.selected === answer.correct) {
+                    correct++;
+                    if (selectedOpt) selectedOpt.classList.add('correct');
+                } else {
+                    if (selectedOpt) selectedOpt.classList.add('incorrect');
+                    if (correctOpt) correctOpt.classList.add('correct');
+                }
+            });
+            
+            // Display score
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const percentage = ((correct / total) * 100).toFixed(1);
+            scoreDisplay.innerHTML = `
+                You scored ${correct} out of ${total} questions (${percentage}%)
+                <br>
+                ${percentage >= 80 ? '🌟 Excellent work!' : percentage >= 60 ? '👍 Good job!' : '📚 Keep learning!'}
+            `;
+            scoreDisplay.style.display = 'block';
+            
+            // Scroll to score
+            scoreDisplay.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Weather Simulator
+        let currentWeather = 'sunny';
+        let raindrops = [];
+        let clouds = [];
+
+        function setWeather(weather) {
+            currentWeather = weather;
+            const weatherSim = document.getElementById('weatherSim');
+            const sun = document.getElementById('sun');
+            const weatherDisplay = document.getElementById('weatherDisplay');
+            const weatherInfo = document.getElementById('weatherInfo');
+            const tempInfo = document.getElementById('tempInfo');
+            const conditionInfo = document.getElementById('conditionInfo');
+            
+            // Clear existing weather elements
+            weatherDisplay.innerHTML = '';
+            
+            // Reset background
+            weatherSim.style.background = 'linear-gradient(to bottom, #87ceeb, #f0f8ff)';
+            
+            switch(weather) {
+                case 'sunny':
+                    sun.style.display = 'block';
+                    weatherInfo.textContent = 'Sunny - Clear skies with bright sunshine';
+                    tempInfo.textContent = '25°C';
+                    conditionInfo.textContent = 'Perfect day for outdoor activities!';
+                    break;
+                    
+                case 'cloudy':
+                    sun.style.display = 'none';
+                    weatherSim.style.background = 'linear-gradient(to bottom, #b0c4de, #d3d3d3)';
+                    createClouds(weatherDisplay, 5);
+                    weatherInfo.textContent = 'Cloudy - Overcast skies with no precipitation';
+                    tempInfo.textContent = '18°C';
+                    conditionInfo.textContent = 'Cool and comfortable, but limited sunshine.';
+                    break;
+                    
+                case 'rainy':
+                    sun.style.display = 'none';
+                    weatherSim.style.background = 'linear-gradient(to bottom, #778899, #a9a9a9)';
+                    createClouds(weatherDisplay, 3);
+                    createRain(weatherDisplay);
+                    weatherInfo.textContent = 'Rainy - Steady rainfall from dark clouds';
+                    tempInfo.textContent = '15°C';
+                    conditionInfo.textContent = 'Grab an umbrella! Rain expected all day.';
+                    break;
+                    
+                case 'stormy':
+                    sun.style.display = 'none';
+                    weatherSim.style.background = 'linear-gradient(to bottom, #2f4f4f, #696969)';
+                    createClouds(weatherDisplay, 4);
+                    createRain(weatherDisplay);
+                    createLightning(weatherDisplay);
+                    weatherInfo.textContent = 'Stormy - Thunderstorms with heavy rain and lightning';
+                    tempInfo.textContent = '12°C';
+                    conditionInfo.textContent = 'Severe weather warning! Stay indoors.';
+                    break;
+                    
+                case 'snowy':
+                    sun.style.display = 'none';
+                    weatherSim.style.background = 'linear-gradient(to bottom, #d3d3d3, #f0f8ff)';
+                    createClouds(weatherDisplay, 3);
+                    createSnow(weatherDisplay);
+                    weatherInfo.textContent = 'Snowy - Snowfall with cold temperatures';
+                    tempInfo.textContent = '-2°C';
+                    conditionInfo.textContent = 'Bundle up! Perfect for building snowmen.';
+                    break;
+            }
+        }
+
+        function createClouds(container, count) {
+            for (let i = 0; i < count; i++) {
+                const cloud = document.createElement('div');
+                cloud.className = 'cloud';
+                cloud.style.width = `${80 + Math.random() * 60}px`;
+                cloud.style.height = `${40 + Math.random() * 30}px`;
+                cloud.style.top = `${20 + Math.random() * 100}px`;
+                cloud.style.left = `${Math.random() * 100}%`;
+                cloud.style.animationDuration = `${15 + Math.random() * 10}s`;
+                cloud.style.animationDelay = `${Math.random() * 5}s`;
+                container.appendChild(cloud);
+            }
+        }
+
+        function createRain(container) {
+            for (let i = 0; i < 50; i++) {
+                const drop = document.createElement('div');
+                drop.className = 'rain';
+                drop.style.left = `${Math.random() * 100}%`;
+                drop.style.animationDuration = `${0.5 + Math.random() * 0.3}s`;
+                drop.style.animationDelay = `${Math.random() * 2}s`;
+                container.appendChild(drop);
+            }
+        }
+
+        function createSnow(container) {
+            for (let i = 0; i < 50; i++) {
+                const flake = document.createElement('div');
+                flake.textContent = '❄';
+                flake.style.position = 'absolute';
+                flake.style.left = `${Math.random() * 100}%`;
+                flake.style.top = '-20px';
+                flake.style.fontSize = `${10 + Math.random() * 15}px`;
+                flake.style.color = 'white';
+                flake.style.animation = `fall ${3 + Math.random() * 3}s linear infinite`;
+                flake.style.animationDelay = `${Math.random() * 5}s`;
+                flake.style.opacity = '0.8';
+                container.appendChild(flake);
+            }
+        }
+
+        function createLightning(container) {
+            setInterval(() => {
+                if (currentWeather === 'stormy' && Math.random() > 0.7) {
+                    const lightning = document.createElement('div');
+                    lightning.style.position = 'absolute';
+                    lightning.style.width = '3px';
+                    lightning.style.height = '100%';
+                    lightning.style.background = '#ffff00';
+                    lightning.style.left = `${Math.random() * 100}%`;
+                    lightning.style.boxShadow = '0 0 20px #ffff00';
+                    lightning.style.zIndex = '1000';
+                    container.appendChild(lightning);
+                    
+                    setTimeout(() => {
+                        lightning.remove();
+                    }, 100);
+                }
+            }, 2000);
+        }
+
+        // Tab switching
+        function showTab(tabName) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.experiment-section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Remove active class from all buttons
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        // Initialize
+        window.onload = function() {
+            generateQuiz();
+            setWeather('sunny');
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meteorology Laboratory Practice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e8ba3 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 3em;
+            color: #ffd700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .subtitle {
+            color: #e0e6ed;
+            font-size: 1.3em;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 15px 30px;
+            background: rgba(135, 206, 250, 0.2);
+            border: 2px solid #87ceeb;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 30px;
+            font-size: 1.1em;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .tab-btn:hover {
+            background: rgba(135, 206, 250, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(135, 206, 250, 0.4);
+        }
+
+        .tab-btn.active {
+            background: #87ceeb;
+            color: #1e3c72;
+            box-shadow: 0 0 25px rgba(135, 206, 250, 0.6);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .lab-card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .lab-card h2, .lab-card h3 {
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+
+        .lab-card p, .lab-card li {
+            color: #e0e6ed;
+            line-height: 1.8;
+            font-size: 1.05em;
+        }
+
+        .canvas-container {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: center;
+            border: 3px solid rgba(135, 206, 250, 0.3);
+        }
+
+        canvas {
+            border: 2px solid #87ceeb;
+            border-radius: 10px;
+            max-width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin: 25px 0;
+            align-items: center;
+            flex-wrap: wrap;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .controls label {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .controls input[type="range"] {
+            width: 200px;
+            accent-color: #87ceeb;
+        }
+
+        .controls select, .controls input[type="number"] {
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid #87ceeb;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 1em;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #87ceeb, #4682b4);
+            border: none;
+            color: #fff;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(135, 206, 250, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .info-box {
+            background: rgba(255, 215, 0, 0.15);
+            border-left: 5px solid #ffd700;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .info-box h4 {
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+
+        .practice-section {
+            background: rgba(50, 205, 50, 0.1);
+            border: 2px solid #32cd32;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+
+        .practice-section h4 {
+            color: #32cd32;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .data-display {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid #87ceeb;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .data-row:last-child {
+            border-bottom: none;
+        }
+
+        .data-label {
+            color: #87ceeb;
+            font-weight: bold;
+        }
+
+        .data-value {
+            color: #ffd700;
+            font-size: 1.2em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            border: 1px solid rgba(135, 206, 250, 0.3);
+            text-align: left;
+        }
+
+        th {
+            background: rgba(135, 206, 250, 0.3);
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .question {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border-left: 5px solid #87ceeb;
+        }
+
+        .question h4 {
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+
+        .option {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 12px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            background: rgba(135, 206, 250, 0.2);
+            border-color: #87ceeb;
+        }
+
+        .option.selected {
+            background: rgba(135, 206, 250, 0.3);
+            border-color: #87ceeb;
+        }
+
+        .option.correct {
+            background: rgba(50, 205, 50, 0.3);
+            border-color: #32cd32;
+        }
+
+        .option.incorrect {
+            background: rgba(255, 50, 50, 0.3);
+            border-color: #ff3232;
+        }
+
+        .score-display {
+            text-align: center;
+            padding: 40px;
+            background: rgba(135, 206, 250, 0.2);
+            border-radius: 20px;
+            margin: 30px 0;
+            border: 3px solid #87ceeb;
+        }
+
+        .score-display h2 {
+            color: #ffd700;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .weather-icon {
+            font-size: 3em;
+            margin: 20px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .instrument-card {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #87ceeb;
+            text-align: center;
+        }
+
+        .instrument-card h4 {
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #87ceeb;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 1em;
+            margin: 10px 0;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .certificate-section {
+            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(135,206,250,0.2));
+            border: 4px solid #ffd700;
+            border-radius: 20px;
+            padding: 50px;
+            margin: 30px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌤️ Meteorology Laboratory</h1>
+            <p class="subtitle">Interactive Weather and Climate Experiments</p>
+        </header>
+
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="showTab('intro')">Introduction</button>
+            <button class="tab-btn" onclick="showTab('lab1')">Lab 1: Water Cycle</button>
+            <button class="tab-btn" onclick="showTab('lab2')">Lab 2: Greenhouse Effect</button>
+            <button class="tab-btn" onclick="showTab('lab3')">Lab 3: Cloud Formation</button>
+            <button class="tab-btn" onclick="showTab('lab4')">Lab 4: Air Pressure</button>
+            <button class="tab-btn" onclick="showTab('lab5')">Lab 5: Weather Simulator</button>
+            <button class="tab-btn" onclick="showTab('assessment')">Final Assessment</button>
+        </div>
+
+        <!-- Introduction -->
+        <div id="intro" class="tab-content active">
+            <div class="lab-card">
+                <h2>Welcome to Meteorology Laboratory</h2>
+                <p>Explore the fundamental principles of weather and climate through hands-on virtual experiments. This laboratory will help you understand atmospheric processes, weather patterns, and climate systems.</p>
+                
+                <div class="info-box">
+                    <h4>🎯 Learning Objectives:</h4>
+                    <ul style="margin-left: 20px;">
+                        <li>Understand the water cycle and its components</li>
+                        <li>Explore the greenhouse effect and climate change</li>
+                        <li>Learn about cloud formation and types</li>
+                        <li>Measure and interpret air pressure changes</li>
+                        <li>Predict weather patterns using meteorological data</li>
+                        <li>Use weather instruments and interpret data</li>
+                    </ul>
+                </div>
+
+                <h3 style="color: #ffd700; margin-top: 30px;">📋 Laboratory Guidelines:</h3>
+                <ol style="line-height: 2.2; color: #e0e6ed; margin-left: 20px; font-size: 1.1em;">
+                    <li><strong>Complete all 5 laboratory experiments</strong> in sequence</li>
+                    <li><strong>Record observations</strong> in the practice sections</li>
+                    <li><strong>Answer practice questions</strong> within each lab</li>
+                    <li><strong>Take detailed notes</strong> on weather phenomena</li>
+                    <li><strong>Complete the final assessment</strong> (20 questions)</li>
+                    <li><strong>Achieve 70% or higher</strong> to receive your certificate</li>
+                </ol>
+
+                <div class="grid-2" style="margin-top: 30px;">
+                    <div class="instrument-card">
+                        <div class="weather-icon">🌡️</div>
+                        <h4>Thermometer</h4>
+                        <p>Measures temperature</p>
+                    </div>
+                    <div class="instrument-card">
+                        <div class="weather-icon">💨</div>
+                        <h4>Anemometer</h4>
+                        <p>Measures wind speed</p>
+                    </div>
+                    <div class="instrument-card">
+                        <div class="weather-icon">📊</div>
+                        <h4>Barometer</h4>
+                        <p>Measures air pressure</p>
+                    </div>
+                    <div class="instrument-card">
+                        <div class="weather-icon">💧</div>
+                        <h4>Hygrometer</h4>
+                        <p>Measures humidity</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lab 1: Water Cycle -->
+        <div id="lab1" class="tab-content">
+            <div class="lab-card">
+                <h2>Lab 1: The Water Cycle</h2>
+                <p>The water cycle (hydrologic cycle) describes the continuous movement of water on, above, and below Earth's surface.</p>
+
+                <div class="canvas-container">
+                    <canvas id="waterCycleCanvas" width="700" height="500"></canvas>
+                </div>
+
+                <div class="controls">
+                    <label>Temperature:</label>
+                    <input type="range" id="tempSlider" min="0" max="100" value="25">
+                    <span id="tempValue" style="color: #ffd700;">25°C</span>
+                    <button class="btn" onclick="toggleWaterCycle()">Play/Pause</button>
+                    <button class="btn" onclick="resetWaterCycle()">Reset</button>
+                </div>
+
+                <div class="info-box">
+                    <h4>💧 Water Cycle Stages:</h4>
+                    <p><strong>1. Evaporation:</strong> Water transforms from liquid to vapor due to heat energy</p>
+                    <p><strong>2. Condensation:</strong> Water vapor cools and forms clouds</p>
+                    <p><strong>3. Precipitation:</strong> Water falls as rain, snow, sleet, or hail</p>
+                    <p><strong>4. Collection:</strong> Water gathers in oceans, lakes, rivers, and groundwater</p>
+                    <p><strong>5. Transpiration:</strong> Plants release water vapor through leaves</p>
+                </div>
+
+                <div class="practice-section">
+                    <h4>📝 Practice Activity 1: Observation Recording</h4>
+                    <p><strong>Task:</strong> Adjust the temperature slider and observe how it affects evaporation rate. Record your observations below:</p>
+                    
+                    <table>
+                        <tr>
+                            <th>Temperature (°C)</th>
+                            <th>Evaporation Rate</th>
+                            <th>Your Observation</th>
+                        </tr>
+                        <tr>
+                            <td>10°C</td>
+                            <td>Slow</td>
+                            <td><input type="text" placeholder="Type observation..."></td>
+                        </tr>
+                        <tr>
+                            <td>30°C</td>
+                            <td>Medium</td>
+                            <td><input type="text" placeholder="Type observation..."></td>
+                        </tr>
+                        <tr>
+                            <td>50°C</td>
+                            <td>Fast</td>
+                            <td><input type="text" placeholder="Type observation..."></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="practice-section">
+                    <h4>📝 Practice Activity 2: Critical Thinking</h4>
+                    <p><strong>Question 1:</strong> Why does increasing temperature increase evaporation rate?</p>
+                    <textarea placeholder="Type your answer here..."></textarea>
+                    
+                    <p style="margin-top: 15px;"><strong>Question 2:</strong> How would the water cycle be affected if there were no oceans?</p>
+                    <textarea placeholder="Type your answer here..."></textarea>
+                    
+                    <p style="margin-top: 15px;"><strong>Question 3:</strong> Explain the role of the sun in the water cycle.</p>
+                    <textarea placeholder="Type your answer here..."></textarea>
+                </div>
+
+                <div class="data-display">
+                    <h4 style="color: #ffd700; margin-bottom: 15px;">📊 Water Distribution on Earth:</h4>
+                    <div class="data-row">
+                        <span class="data-label">Oceans:</span>
+                        <span class="data-value">97.5%</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Freshwater (ice caps, glaciers):</span>
+                        <span class="data-value">1.75%</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Groundwater:</span>
+                        <span class="data-value">0.68%</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Surface water (lakes, rivers):</span>
+                        <span class="data-value">0.07%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lab 2: Greenhouse Effect -->
+        <div id="lab2" class="tab-content">
+            <div class="lab-card">
+                <h2>Lab 2: Greenhouse Effect</h2>
+                <p>The greenhouse effect is the process by which greenhouse gases trap heat in Earth's atmosphere, warming the planet.</p>
+
+                <div class="canvas-container">
+                    <canvas id="greenhouseCanvas" width="700" height="500"></canvas>
+                </div>
+
+                <div class="controls">
+                    <label>CO₂ Level (ppm):</label>
+                    <input type="range" id="co2Slider" min="280" max="600" value="410" oninput="updateGreenhouse()">
+                    <span id="co2Value" style="color: #ffd700;">410 ppm</span>
+                    <label style="margin-left: 20px;">Time Period:</label>
+                    <select id="timePeriod" onchange="updateGreenhouse()">
+                        <option value="1800">Pre-Industrial (1800)</option>
+                        <option value="1950">Mid 20th Century (1950)</option>
+                        <option value="2000">Year 2000</option>
+                        <option value="2024" selected>Present Day (2024)</option>
+                        <option value="2050">Future Projection (2050)</option>
+                    </select>
+                </div>
+
+                <div class="data-display">
+                    <h4 style="color: #ffd700; margin-bottom: 15px;">🌡️ Current Simulation Data:</h4>
+                    <div class="data-row">
+                        <span class="data-label">Earth's Surface Temperature:</span>
+                        <span class="data-value" id="surfaceTemp">15°C</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Heat Trapped:</span>
+                        <span class="data-value" id="heatTrapped">33%</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Infrared Reflection:</span>
+                        <span class="data-value" id="irReflection">67%</span>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h4>🌍 Greenhouse Gases:</h4>
+                    <p><strong>Carbon Dioxide (CO₂):</strong> From burning fossil fuels, deforestation</p>
+                    <p><strong>Methane (CH₄):</strong> From agriculture, landfills, natural gas</p>
+                    <p><strong>Water Vapor (H₂O):</strong> Most abundant, from evaporation</p>
+                    <p><strong>Nitrous Oxide (N₂O):</strong> From fertilizers, industrial processes</p>
+                    <p><strong>Ozone (O₃):</strong> In troposphere, from pollution</p>
+                </div>
+
+                <div class="practice-section">
+                    <h4>📝 Practice Activity 1: Data Analysis</h4>
+                    <p><strong>Task:</strong> Test different CO₂ levels and record the temperature changes:</p>
+                    
+                    <table>
+                        <tr>
+                            <th>CO₂ Level (ppm)</th>
+                            <th>Temperature (°C)</th>
+                            <th>Temperature Change</th>
+                            <th>Impact Assessment</th>
+                        </tr>
+                        <tr>
+                            <td>280 (Pre-industrial)</td>
+                            <td><input type="number" placeholder="Record temp"></td>
+                            <td>Baseline</td>
+                            <td><input type="text" placeholder="Your analysis"></td>
+                        </tr>
+                        <tr>
+                            <td>410 (Current)</td>
+                            <td><input type="number" placeholder="Record temp"></td>
+                            <td><input type="text" placeholder="Change"></td>
+                            <td><input type="text" placeholder="Your analysis"></td>
+                        </tr>
+                        <tr>
+                            <td>560 (Projected 2050)</td>
+                            <td><input type="number" placeholder="Record temp"></td>
+                            <td><input type="text" placeholder="Change"></td>
+                            <td><input type="text" placeholder="Your analysis"></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="practice-section">
+                    <h4>📝 Practice Activity 2: Critical Analysis</h4>
+                    <p><strong>Question 1:</strong> What is the relationship between CO₂ concentration and global temperature?</p>
+                    <textarea placeholder="Explain the relationship..."></textarea>
+                    
+                    <p style="margin-top: 15px;"><strong>Question 2:</strong> Why is the greenhouse effect necessary for life on Earth?</p>
+                    <textarea placeholder="Type your answer..."></textarea>
+                    
+                    <p style="margin-top: 15px;"><strong>Question 3:</strong> Propose three solutions to reduce greenhouse gas emissions.</p>
+                    <textarea placeholder="List and explain your solutions..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lab 3: Cloud Formation -->
+        <div id="lab3" class="tab-content">
+            <div class="lab-card">
+                <h2>Lab 3: Cloud Formation and Classification</h2>
+                <p>Clouds form when water vapor condenses into tiny water droplets or ice crystals in the atmosphere.</p>
+
+                <div class="canvas-container">
+                    <canvas id="cloudCanvas" width="700" height="500"></canvas>
+                </div>
+
+                <div class="controls">
+                    <label>Altitude (km):</label>
+                    <input type="range" id="altitudeSlider" min="0" max="12" value="2" step="0.5" oninput="updateClouds()">
+                    <span id="altitudeValue" style="color: #ffd700;">2 km</span>
+                    
+                    <label style="margin-left: 20px;">Humidity (%):</label>
+                    <input type="range" id="humiditySlider" min="0" max="100" value="60" oninput="updateClouds()">
+                    <span id="humidityValue" style="color: #ffd700;">60%</span>
+                    
+                    <button class="btn" onclick="formCloud()">Form Cloud</button>
+                </div>
+
+                <div class="data-display">
+                    <h4 style="color: #ffd700; margin-bottom: 15px;">☁️ Current Cloud Type:</h4>
+                    <div class="data-row">
+                        <span class="data-label">Cloud Type:</span>
+                        <span class="data-value" id="cloudType">Cumulus</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Altitude Range:</span>
+                        <span class="data-value" id="cloudAltitude">0-2 km (Low)</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Weather Association:</span>
+                        <span class="data-value" id="cloudWeather">Fair weather</span>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h4>☁️ Cloud Classification:</h4>
+                    <p><strong>High Clouds (6-12 km):</strong> Cirrus, Cirrostratus, Cirrocumulus</p>
+                    <p><strong>Middle Clouds (2-6 km):</strong> Altostratus, Altocumulus</p>
+                    <p><strong>Low Clouds (0-2 km):</strong> Stratus, Stratocumulus, Nimbostratus</p>
+                    <p><strong>Vertical Development:</strong> Cumulus, Cumulonimbus</p>
+                </div>
+
+                <div class="grid-2" style="margin: 20px 0;">
+                    <div class="instrument-card">
+                        <h4>Cumulus ☁️</h4>
+                        <p>Puffy, cotton-like clouds</p>
+                        <p><strong>Weather:</strong> Fair</p>
+                    </div>
+                    <div class="instrument-card">
+                        <h4>Cumulonimbus ⛈️</h4>
+                        <p>Towering storm clouds</p>
+                        <p><strong>Weather:</strong> Thunderstorms</p>
+                    </div>
+                    <div class="instrument-card">
+                        <h4>Stratus 🌫️</h4>
+                        <p>Flat, gray layer clouds</p>
+                        <p><strong>Weather:</strong> Overcast</p>
+                    </div>
+                    <div class="instrument-card">
+                        <h4>Cirrus 🌤️</h4>
+                        <p>Thin, wispy high clouds</p>
+                        <p><strong>Weather:</strong> Fair to changing</p>
+                    </div>
+                </div>
+
+                <div class="practice-section">
+                    <h4>📝 Practice Activity 1: Cloud Observation Log</h4>
+                    <p><strong>Task:</strong> Create clouds at different altitudes and record their characteristics:</p>
+                    
+                    <table>
+                        <tr>
+                            <th>Altitude (km)</th>
+                            <th>Humidity (%)</th>
+                            <th>Cloud Type Formed</th>
+                            <th>Observations</th>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td><input type="number" placeholder="Set %"></td>
+                            <td><input type="text" placeholder="Cloud type"></td>
+                            <td><input type="text" placeholder="Describe..."></td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td><input type="number" placeholder="Set %"></td>
+                            <td><input type="text" placeholder="Cloud type"></td>
+                            <td><input type="text" placeholder="Describe..."></td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td><input type="number" placeholder="Set %"></td>
+                            <td><input type="text" placeholder="Cloud type"></td>
+                            <td><input type="text" placeholder="Describe..."></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="practice-section">
+                    <h4>📝 Practice Activity 2: Weather Prediction</h4>
+                    <p><strong>Scenario 1:</strong> You observe dark, tall cumulonimbus clouds forming. What weather do you predict?</p>
+                    <textarea placeholder="Your prediction and reasoning..."></textarea>
+                    
+                    <p style="margin-top: 15px;"><strong>Scenario 2:</strong> Thin cirrus clouds appear in the morning. What might happen in 24-48 hours?</p>
+                    <textarea placeholder="Your prediction and reasoning..."></textarea>
+                    
+                    <p style="margin-top: 15px;"><strong>Question:</strong> Explain why clouds form at different altitudes and what determines their type.</p>
+                    <textarea placeholder="Type your answer..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lab 4: Air Pressure -->
+        <div id="lab4" class="tab-content">
+            <div class="lab-card">
+                <h2>Lab 4: Air Pressure and Weather Systems</h2>
+                <p>Air pressure is the force exerted by the weight of air in the atmosphere. Changes in air pressure create wind and weather patterns.</p>
+
+                <div class="canvas-container">
+                    <canvas id="pressureCanvas" width="700" height="500"></canvas>
+                </div>
+
+                <div class="controls">
+                    <label>Pressure (mb):</label>
+                    <input type="range" id="pressureSlider" min="950" max="1050" value="1013" oninput="updatePressure()">
+                    <span id="pressureValue" style="color: #ffd700;">1013 mb</span>
+                    
+                    <label style="margin-left: 20px;">System Type:</label>
+                    <select id="systemType" onchange="updatePressure()">
+                        <option value="high">High Pressure</option>
+                        <option value="low">Low Pressure</option>
+                        <option value="normal" selected>Normal</option>
+                    </select>
+                    
+                    <button class="btn" onclick="animatePressure()">Animate</button>
+                </div>
+
+                <div class="data-display">
+                    <h4 style="color: #ffd700; margin-bottom: 15px;">📊 Pressure System Data:</h4>
+                    <div class="data-row">
+                        <span class="data-label">Current Pressure:</span>
+                        <span class="data-value" id="currentPressure">1013 mb</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">System Type:</span>
+                        <span class="data-value" id="systemTypeName">Normal</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Expected Weather:</span>
+                        <span class="data-value" id="expectedWeather">Stable</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Wind Direction:</span>
+                        <span class="data-value" id="windDirection">Variable</span>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h4>🌪️ Pressure Systems:</h4>
+                    <p><strong>High Pressure (Anticyclone):</strong> Air sinks, clear skies, calm weather. Winds flow clockwise (Northern Hemisphere).</p>
+                    <p><strong>Low Pressure (Cyclone):</strong> Air rises, clouds form, stormy weather. Winds flow counterclockwise (Northern Hemisphere).</p>
+                    <p><strong>Standard Pressure:</strong> 1013.25 mb (millibars) or 29.92 inches Hg at sea level</p>
+                </div>
+
+                <div class="practice-section">
+                    <h4>📝 Practice Activity 1: Barometer Reading</h4>
+                    <p><strong>Task:</strong> Record pressure readings over time and predict weather changes:</p>
+                    
+                    <table>
+                        <tr>
+                            <th>Time</th>
+                            <th>Pressure (mb)</th>
+                            <th>Trend</th>
+                            <th>Weather Prediction</th>
+                        </tr>
+                        <tr>
+                            <td>6:00 AM</td>
+                            <td><input type="number" placeholder="Record"></td>
+                            <td>
+                                <select>
+                                    <option>Rising</option>
+                                    <option>Falling</option>
+                                    <option>Steady</option>
+                                </select>
+                            </td>
+                            <td><input type="text" placeholder="Predict weather"></td>
+                        </tr>
+                        <tr>
+                            <td>12:00 PM</td>
+                            <td><input type="number" placeholder="Record"></td>
+                            <td>
+                                <select>
+                                    <option>Rising</option>
+                                    <option>Falling</option>
+                                    <option>Steady</option>
+                                </select>
+                            </td>
+                            <td><input type="text" placeholder="Predict weather"></td>
+                        </tr>
+                        <tr>
+                            <td>6:00 PM</td>
+                            <td><input type="number" placeholder="Record"></td>
+                            <td>
+                                <select>
+                                    <option>Rising</option>
+                                    <option>Falling</option>
+                                    <option>Steady</option>
+                                </select>
+                            </td>
+                            <td><input type="text" placeholder="Predict weather"></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="practice-section">
+                    <h4>📝 Practice Activity 2: Weather Map Analysis</h4>
+                    <p><strong>Question 1:</strong> A weather station reports rapidly falling pressure. What weather changes should be expected and why?</p>
+                    <textarea placeholder="Your analysis..."></textarea>
+                    
+                    <p style="margin-top: 15px;"><strong>Question 2:</strong> Compare and contrast high and low pressure systems in terms of weather conditions.</p>
+                    <textarea placeholder="Your comparison..."></textarea>
+                    
+                    <p style="margin-top: 15px;"><strong>Question 3:</strong> Why does air pressure decrease with altitude?</p>
+                    <textarea placeholder="Explain the relationship..."></textarea>
+                </div>
+
+                <div class="grid-2">
+                    <div class="instrument-card">
+                        <h4>Mercury Barometer</h4>
+                        <p>Uses mercury column height</p>
+                        <p><strong>Unit:</strong> inches Hg</p>
+                    </div>
+                    <div class="instrument-card">
+                        <h4>Aneroid Barometer</h4>
+                        <p>Uses flexible metal chamber</p>
+                        <p><strong>Unit:</strong> millibars (mb)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lab 5: Weather Simulator -->
+        <div id="lab5" class="tab-content">
+            <div class="lab-card">
+                <h2>Lab 5: Complete Weather Simulation</h2>
+                <p>Combine all meteorological factors to create and analyze complete weather scenarios.</p>
+
+                <div class="canvas-container">
+                    <canvas id="weatherCanvas" width="700" height="500"></canvas>
+                </div>
+
+                <div class="controls">
+                    <label>Temperature (°C):</label>
+                    <input type="number" id="simTemp" min="-30" max="45" value="20">
+                    
+                    <label>Humidity (%):</label>
+                    <input type="number" id="simHumidity" min="0" max="100" value="50">
+                    
+                    <label>Pressure (mb):</label>
+                    <input type="number" id="simPressure" min="950" max="1050" value="1013">
+                    
+                    <label>Wind Speed (km/h):</label>
+                    <input type="number" id="simWind" min="0" max="150" value="15">
+                    
+                    <button class="btn" onclick="simulateWeather()">Generate Weather</button>
+                    <button class="btn" onclick="randomWeather()">Random Scenario</button>
+                </div>
+
+                <div class="data-display">
+                    <h4 style="color: #ffd700; margin-bottom: 15px;">🌦️ Weather Analysis:</h4>
+                    <div class="data-row">
+                        <span class="data-label">Weather Condition:</span>
+                        <span class="data-value" id="weatherCondition">Clear</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Visibility:</span>
+                        <span class="data-value" id="visibility">Excellent</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Precipitation Chance:</span>
+                        <span class="data-value" id="precipChance">0%</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Comfort Index:</span>
+                        <span class="data-value" id="comfortIndex">Comfortable</span>
+                    </div>
+                </div>
+
+                <div class="practice-section">
+                    <h4>📝 Practice Activity 1: Weather Scenario Analysis</h4>
+                    <p><strong>Instructions:</strong> Create three different weather scenarios and document the conditions:</p>
+                    
+                    <table>
+                        <tr>
+                            <th>Scenario</th>
+                            <th>Temp</th>
+                            <th>Humidity</th>
+                            <th>Pressure</th>
+                            <th>Wind</th>
+                            <th>Result</th>
+                        </tr>
+                        <tr>
+                            <td>Summer Day</td>
+                            <td><input type="number" style="width: 60px;"></td>
+                            <td><input type="number" style="width: 60px;"></td>
+                            <td><input type="number" style="width: 70px;"></td>
+                            <td><input type="number" style="width: 60px;"></td>
+                            <td><input type="text" placeholder="Weather result"></td>
+                        </tr>
+                        <tr>
+                            <td>Storm Approach</td>
+                            <td><input type="number" style="width: 60px;"></td>
+                            <td><input type="number" style="width: 60px;"></td>
+                            <td><input type="number" style="width: 70px;"></td>
+                            <td><input type="number" style="width: 60px;"></td>
+                            <td><input type="text" placeholder="Weather result"></td>
+                        </tr>
+                        <tr>
+                            <td>Winter Cold</td>
+                            <td><input type="number" style="width: 60px;"></td>
+                            <td><input type="number" style="width: 60px;"></td>
+                            <td><input type="number" style="width: 70px;"></td>
+                            <td><input type="number" style="width: 60px;"></td>
+                            <td><input type="text" placeholder="Weather result"></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="practice-section">
+                    <h4>📝 Practice Activity 2: Weather Forecasting</h4>
+                    <p><strong>Current Conditions:</strong></p>
+                    <p>Temperature: 18°C | Humidity: 75% | Pressure: 998 mb (falling) | Wind: 25 km/h from SW</p>
+                    
+                    <p style="margin-top: 15px;"><strong>Task 1:</strong> Based on these conditions, write a 24-hour weather forecast:</p>
+                    <textarea placeholder="Your forecast..."></textarea>
+                    
+                    <p style="margin-top: 15px;"><strong>Task 2:</strong> What weather instruments would you use to verify your forecast? Explain.</p>
+                    <textarea placeholder="List instruments and their purposes..."></textarea>
+                    
+                    <p style="margin-top: 15px;"><strong>Task 3:</strong> Create a severe weather warning based on extreme conditions you simulate.</p>
+                    <textarea placeholder="Write your weather warning..."></textarea>
+                </div>
+
+                <div class="info-box">
+                    <h4>📡 Modern Weather Forecasting Tools:</h4>
+                    <p><strong>Weather Satellites:</strong> Monitor clouds, storms, and atmospheric conditions from space</p>
+                    <p><strong>Weather Radar:</strong> Detect precipitation, storm intensity, and movement</p>
+                    <p><strong>Weather Balloons:</strong> Measure temperature, humidity, pressure at various altitudes</p>
+                    <p><strong>Computer Models:</strong> Predict weather using complex mathematical equations</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assessment -->
+        <div id="assessment" class="tab-content">
+            <div class="lab-card">
+                <h2 style="text-align: center;">🌤️ Final Assessment - 25 Questions</h2>
+                <p style="text-align: center; margin-bottom: 30px;">Test your knowledge of all meteorology concepts covered in the laboratory</p>
+                
+                <div id="quizQuestions"></div>
+                
+                <button class="btn" onclick="submitQuiz()" style="display: block; margin: 30px auto; padding: 15px 50px; font-size: 1.2em;">Submit Assessment</button>
+                
+                <div id="scoreSection" class="hidden">
+                    <div class="score-display">
+                        <h2 id="finalScore"></h2>
+                        <p id="scoreMessage" style="font-size: 1.3em; margin: 20px 0;"></p>
+                        <button class="btn" onclick="retakeQuiz()">Retake Assessment</button>
+                        <button class="btn" onclick="generateCertificate()" id="certBtn" style="margin-left: 15px; background: linear-gradient(135deg, #32cd32, #228b22);">Generate Certificate</button>
+                    </div>
+                </div>
+
+                <!-- Certificate -->
+                <div id="certificateSection" class="hidden">
+                    <div class="certificate-section">
+                        <h1 style="color: #ffd700; font-size: 3em; margin-bottom: 20px;">🏆 Certificate of Achievement 🏆</h1>
+                        <div style="height: 4px; background: linear-gradient(90deg, transparent, #ffd700, transparent); margin: 20px auto; width: 80%;"></div>
+                        
+                        <p style="font-size: 1.3em; margin: 25px 0;">This certifies that</p>
+                        
+                        <div style="margin: 35px 0;">
+                            <input type="text" id="studentName" placeholder="Enter Your Full Name" style="padding: 18px; font-size: 1.6em; text-align: center; width: 85%; max-width: 500px; border: 3px solid #87ceeb;">
+                        </div>
+                        
+                        <p style="font-size: 1.3em; margin: 25px 0;">has successfully completed the</p>
+                        
+                        <h2 style="color: #87ceeb; font-size: 2.3em; margin: 25px 0;">Meteorology Laboratory Practice</h2>
+                        
+                        <p style="font-size: 1.2em; margin: 25px 0;">With comprehensive study of:</p>
+                        <div style="text-align: left; display: inline-block; margin: 25px 0; font-size: 1.1em;">
+                            <p>✓ Lab 1: Water Cycle and Hydrologic Processes</p>
+                            <p>✓ Lab 2: Greenhouse Effect and Climate Systems</p>
+                            <p>✓ Lab 3: Cloud Formation and Classification</p>
+                            <p>✓ Lab 4: Air Pressure and Weather Systems</p>
+                            <p>✓ Lab 5: Comprehensive Weather Simulation</p>
+                        </div>
+                        
+                        <div style="margin: 35px 0; padding: 25px; background: rgba(0,0,0,0.3); border-radius: 15px; display: inline-block;">
+                            <p style="font-size: 1.4em; color: #ffd700;">Final Score: <span id="certScore"></span></p>
+                            <p style="font-size: 1.2em; color: #32cd32; margin-top: 10px;" id="certGrade"></p>
+                        </div>
+                        
+                        <p style="margin-top: 35px; font-size: 1.1em;">Completion Date: <span id="certDate"></span></p>
+                        
+                        <div style="margin-top: 50px; display: flex; justify-content: space-around; max-width: 700px; margin-left: auto; margin-right: auto;">
+                            <div style="text-align: center;">
+                                <div style="border-top: 3px solid #87ceeb; padding-top: 15px; margin-top: 60px; width: 250px;">
+                                    <p style="color: #ffd700; font-size: 1.1em;">Meteorology Instructor</p>
+                                </div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="border-top: 3px solid #87ceeb; padding-top: 15px; margin-top: 60px; width: 250px;">
+                                    <p style="color: #ffd700; font-size: 1.1em;">Official Seal</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn" onclick="printCertificate()" style="margin-top: 40px; padding: 18px 45px; font-size: 1.2em;">🖨️ Print Certificate</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab Navigation
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabId === 'lab1') initWaterCycle();
+            if (tabId === 'lab2') updateGreenhouse();
+            if (tabId === 'lab3') updateClouds();
+            if (tabId === 'lab4') updatePressure();
+            if (tabId === 'lab5') simulateWeather();
+            if (tabId === 'assessment') loadQuiz();
+        }
+
+        // Lab 1: Water Cycle
+        let waterRunning = true;
+        let waterDrops = [];
+        
+        function initWaterCycle() {
+            waterDrops = [];
+            animateWaterCycle();
+        }
+        
+        function animateWaterCycle() {
+            if (!waterRunning) return;
+            
+            const canvas = document.getElementById('waterCycleCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const temp = parseInt(document.getElementById('tempSlider').value);
+            document.getElementById('tempValue').textContent = temp + '°C';
+            
+            // Draw sun
+            ctx.beginPath();
+            ctx.arc(600, 80, 40, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffd700';
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = '#ffd700';
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            
+            // Draw ocean
+            ctx.fillStyle = '#1e90ff';
+            ctx.fillRect(0, 350, 700, 150);
+            
+            // Draw mountains/land
+            ctx.fillStyle = '#654321';
+            ctx.beginPath();
+            ctx.moveTo(400, 350);
+            ctx.lineTo(500, 250);
+            ctx.lineTo(600, 350);
+            ctx.fill();
+            
+            // Draw cloud
+            ctx.fillStyle = '#ddd';
+            ctx.beginPath();
+            ctx.arc(350, 150, 40, 0, Math.PI * 2);
+            ctx.arc(390, 150, 50, 0, Math.PI * 2);
+            ctx.arc(440, 150, 40, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Evaporation (based on temperature)
+            if (Math.random() < temp / 100) {
+                waterDrops.push({x: Math.random() * 300, y: 350, state: 'evap'});
+            }
+            
+            // Animate drops
+            waterDrops.forEach((drop, i) => {
+                if (drop.state === 'evap') {
+                    drop.y -= 2;
+                    ctx.fillStyle = 'rgba(135, 206, 250, 0.5)';
+                    ctx.beginPath();
+                    ctx.arc(drop.x, drop.y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    if (drop.y < 180) {
+                        drop.state = 'rain';
+                        drop.x = 350 + Math.random() * 100;
+                    }
+                } else if (drop.state === 'rain') {
+                    drop.y += 4;
+                    ctx.fillStyle = '#1e90ff';
+                    ctx.fillRect(drop.x, drop.y, 2, 10);
+                    
+                    if (drop.y > 350) {
+                        waterDrops.splice(i, 1);
+                    }
+                }
+            });
+            
+            // Labels
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText('☀️ Solar Energy', 520, 60);
+            ctx.fillText('💧 Evaporation', 100, 330);
+            ctx.fillText('☁️ Condensation', 300, 130);
+            ctx.fillText('🌊 Precipitation', 400, 220);
+            ctx.fillText('🌊 Ocean', 50, 430);
+            
+            requestAnimationFrame(animateWaterCycle);
+        }
+        
+        function toggleWaterCycle() {
+            waterRunning = !waterRunning;
+            if (waterRunning) animateWaterCycle();
+        }
+        
+        function resetWaterCycle() {
+            waterDrops = [];
+        }
+
+        // Lab 2: Greenhouse Effect
+        function updateGreenhouse() {
+            const canvas = document.getElementById('greenhouseCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const co2 = parseInt(document.getElementById('co2Slider').value);
+            document.getElementById('co2Value').textContent = co2 + ' ppm';
+            
+            // Calculate temperature based on CO2
+            const baseTemp = 15;
+            const tempIncrease = ((co2 - 280) / 280) * 3;
+            const surfaceTemp = (baseTemp + tempIncrease).toFixed(1);
+            
+            document.getElementById('surfaceTemp').textContent = surfaceTemp + '°C';
+            document.getElementById('heatTrapped').textContent = Math.min(33 + tempIncrease * 3, 60).toFixed(0) + '%';
+            document.getElementById('irReflection').textContent = Math.max(67 - tempIncrease * 3, 40).toFixed(0) + '%';
+            
+            // Draw Earth
+            ctx.fillStyle = '#4169e1';
+            ctx.fillRect(0, 400, 700, 100);
+            ctx.fillStyle = '#228b22';
+            ctx.fillRect(0, 420, 700, 80);
+            
+            // Draw atmosphere layers
+            const layers = Math.floor(co2 / 100);
+            ctx.fillStyle = 'rgba(135, 206, 250, 0.2)';
+            for (let i = 0; i < layers; i++) {
+                ctx.fillRect(0, 350 - i * 30, 700, 25);
+            }
+            
+            // Draw sun rays
+            ctx.strokeStyle = '#ffd700';
+            ctx.lineWidth = 3;
+            for (let i = 0; i < 10; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * 70, 0);
+                ctx.lineTo(i * 70 + 30, 400);
+                ctx.stroke();
+            }
+            
+            // Draw reflected heat
+            ctx.strokeStyle = '#ff6347';
+            ctx.lineWidth = 2;
+            const reflectionIntensity = Math.floor((co2 - 280) / 50);
+            for (let i = 0; i < reflectionIntensity; i++) {
+                ctx.beginPath();
+                ctx.moveTo(100 + i * 100, 400);
+                ctx.lineTo(120 + i * 100, 300 - i * 20);
+                ctx.stroke();
+            }
+            
+            // Labels
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('☀️ Incoming Solar Radiation', 220, 30);
+            ctx.fillText('🌡️ Greenhouse Gases: ' + co2 + ' ppm', 220, 200);
+            ctx.fillText('🌍 Earth Surface: ' + surfaceTemp + '°C', 220, 470);
+        }
+
+        // Lab 3: Cloud Formation
+        function updateClouds() {
+            const canvas = document.getElementById('cloudCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const altitude = parseFloat(document.getElementById('altitudeSlider').value);
+            const humidity = parseInt(document.getElementById('humiditySlider').value);
+            
+            document.getElementById('altitudeValue').textContent = altitude + ' km';
+            document.getElementById('humidityValue').textContent = humidity + '%';
+            
+            // Determine cloud type based on altitude
+            let cloudType, cloudAlt, cloudWeather;
+            if (altitude >= 8) {
+                cloudType = 'Cirrus';
+                cloudAlt = '6-12 km (High)';
+                cloudWeather = 'Fair to changing weather';
+            } else if (altitude >= 4) {
+                cloudType = 'Altocumulus';
+                cloudAlt = '2-6 km (Middle)';
+                cloudWeather = 'Partly cloudy';
+            } else if (altitude >= 2) {
+                cloudType = 'Cumulus';
+                cloudAlt = '0-2 km (Low)';
+                cloudWeather = 'Fair weather';
+            } else {
+                cloudType = 'Stratus';
+                cloudAlt = '0-2 km (Low)';
+                cloudWeather = 'Overcast, possible drizzle';
+            }
+            
+            document.getElementById('cloudType').textContent = cloudType;
+            document.getElementById('cloudAltitude').textContent = cloudAlt;
+            document.getElementById('cloudWeather').textContent = cloudWeather;
+            
+            // Draw sky gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, 500);
+            gradient.addColorStop(0, '#001f3f');
+            gradient.addColorStop(0.5, '#3a7ca5');
+            gradient.addColorStop(1, '#87ceeb');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 700, 500);
+            
+            // Draw ground
+            ctx.fillStyle = '#228b22';
+            ctx.fillRect(0, 450, 700, 50);
+            
+            // Draw cloud at altitude
+            const cloudY = 450 - (altitude / 12) * 400;
+            ctx.fillStyle = humidity > 70 ? '#666' : '#fff';
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = ctx.fillStyle;
+            
+            if (cloudType === 'Cirrus') {
+                // Wispy clouds
+                for (let i = 0; i < 5; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(200 + i * 50, cloudY);
+                    ctx.quadraticCurveTo(225 + i * 50, cloudY - 10, 250 + i * 50, cloudY);
+                    ctx.lineWidth = 3;
+                    ctx.strokeStyle = '#fff';
+                    ctx.stroke();
+                }
+            } else if (cloudType === 'Cumulus') {
+                // Puffy clouds
+                ctx.beginPath();
+                ctx.arc(300, cloudY, 40, 0, Math.PI * 2);
+                ctx.arc(340, cloudY, 50, 0, Math.PI * 2);
+                ctx.arc(390, cloudY, 45, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                // Layer clouds
+                ctx.fillRect(150, cloudY - 20, 400, 40);
+            }
+            
+            ctx.shadowBlur = 0;
+            
+            // Draw altitude markers
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 5]);
+            for (let i = 0; i <= 12; i += 2) {
+                const y = 450 - (i / 12) * 400;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(700, y);
+                ctx.stroke();
+                ctx.fillStyle = '#fff';
+                ctx.font = '12px Arial';
+                ctx.fillText(i + ' km', 10, y - 5);
+            }
+            ctx.setLineDash([]);
+        }
+        
+        function formCloud() {
+            updateClouds();
+        }
+
+        // Lab 4: Air Pressure
+        let pressureAnimating = false;
+        
+        function updatePressure() {
+            const canvas = document.getElementById('pressureCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const pressure = parseInt(document.getElementById('pressureSlider').value);
+            const systemType = document.getElementById('systemType').value;
+            
+            document.getElementById('pressureValue').textContent = pressure + ' mb';
+            document.getElementById('currentPressure').textContent = pressure + ' mb';
+            
+            let systemName, weather, windDir;
+            if (pressure > 1020) {
+                systemName = 'High Pressure';
+                weather = 'Clear, calm, stable';
+                windDir = 'Clockwise outward';
+            } else if (pressure < 1000) {
+                systemName = 'Low Pressure';
+                weather = 'Cloudy, stormy, unstable';
+                windDir = 'Counterclockwise inward';
+            } else {
+                systemName = 'Normal';
+                weather = 'Variable, stable';
+                windDir = 'Variable';
+            }
+            
+            document.getElementById('systemTypeName').textContent = systemName;
+            document.getElementById('expectedWeather').textContent = weather;
+            document.getElementById('windDirection').textContent = windDir;
+            
+            // Draw pressure system
+            const centerX = 350, centerY = 250;
+            
+            if (systemName === 'High Pressure') {
+                // High pressure - clear sky
+                ctx.fillStyle = '#87ceeb';
+                ctx.fillRect(0, 0, 700, 500);
+                
+                // Draw H symbol
+                ctx.fillStyle = '#000';
+                ctx.font = 'bold 60px Arial';
+                ctx.fillText('H', centerX - 20, centerY + 20);
+                
+                // Clockwise wind arrows
+                for (let i = 0; i < 8; i++) {
+                    const angle = (i * Math.PI / 4) + Math.PI / 8;
+                    const x1 = centerX + Math.cos(angle) * 80;
+                    const y1 = centerY + Math.sin(angle) * 80;
+                    const x2 = centerX + Math.cos(angle) * 140;
+                    const y2 = centerY + Math.sin(angle) * 140;
+                    
+                    ctx.strokeStyle = '#000';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                    ctx.stroke();
+                    
+                    // Arrow head
+                    const headAngle = angle + Math.PI / 6;
+                    ctx.beginPath();
+                    ctx.moveTo(x2, y2);
+                    ctx.lineTo(x2 - Math.cos(headAngle) * 15, y2 - Math.sin(headAngle) * 15);
+                    ctx.stroke();
+                }
+            } else if (systemName === 'Low Pressure') {
+                // Low pressure - cloudy/stormy
+                ctx.fillStyle = '#4a5a6a';
+                ctx.fillRect(0, 0, 700, 500);
+                
+                // Draw clouds
+                ctx.fillStyle = '#333';
+                for (let i = 0; i < 5; i++) {
+                    const x = 100 + i * 120;
+                    ctx.beginPath();
+                    ctx.arc(x, 100, 40, 0, Math.PI * 2);
+                    ctx.arc(x + 40, 100, 50, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                // Draw L symbol
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 60px Arial';
+                ctx.fillText('L', centerX - 15, centerY + 20);
+                
+                // Counterclockwise wind arrows
+                for (let i = 0; i < 8; i++) {
+                    const angle = (i * Math.PI / 4) - Math.PI / 8;
+                    const x1 = centerX + Math.cos(angle) * 140;
+                    const y1 = centerY + Math.sin(angle) * 140;
+                    const x2 = centerX + Math.cos(angle) * 80;
+                    const y2 = centerY + Math.sin(angle) * 80;
+                    
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                    ctx.stroke();
+                    
+                    // Arrow head
+                    const headAngle = angle + Math.PI - Math.PI / 6;
+                    ctx.beginPath();
+                    ctx.moveTo(x2, y2);
+                    ctx.lineTo(x2 + Math.cos(headAngle) * 15, y2 + Math.sin(headAngle) * 15);
+                    ctx.stroke();
+                }
+                
+                // Rain
+                ctx.strokeStyle = '#87ceeb';
+                for (let i = 0; i < 30; i++) {
+                    const x = Math.random() * 700;
+                    const y = 150 + Math.random() * 300;
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(x, y + 15);
+                    ctx.stroke();
+                }
+            } else {
+                // Normal conditions
+                ctx.fillStyle = '#b0c4de';
+                ctx.fillRect(0, 0, 700, 500);
+                
+                ctx.fillStyle = '#000';
+                ctx.font = 'bold 40px Arial';
+                ctx.fillText('Normal Pressure', centerX - 120, centerY);
+            }
+            
+            // Pressure reading display
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.fillRect(20, 20, 200, 80);
+            ctx.fillStyle = '#ffd700';
+            ctx.font = 'bold 20px Arial';
+            ctx.fillText('Barometer', 40, 50);
+            ctx.font = '24px Arial';
+            ctx.fillText(pressure + ' mb', 40, 85);
+        }
+        
+        function animatePressure() {
+            updatePressure();
+        }
+
+        // Lab 5: Weather Simulator
+        function simulateWeather() {
+            const canvas = document.getElementById('weatherCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const temp = parseInt(document.getElementById('simTemp').value);
+            const humidity = parseInt(document.getElementById('simHumidity').value);
+            const pressure = parseInt(document.getElementById('simPressure').value);
+            const wind = parseInt(document.getElementById('simWind').value);
+            
+            // Determine weather condition
+            let condition, visibility, precip, comfort;
+            
+            if (pressure < 990 && humidity > 80) {
+                condition = 'Severe Storm ⛈️';
+                visibility = 'Poor';
+                precip = '90%';
+                comfort = 'Uncomfortable';
+            } else if (pressure < 1000 && humidity > 70) {
+                condition = 'Rainy 🌧️';
+                visibility = 'Moderate';
+                precip = '70%';
+                comfort = 'Cool';
+            } else if (temp > 30 && humidity > 70) {
+                condition = 'Hot & Humid 🌡️';
+                visibility = 'Good';
+                precip = '30%';
+                comfort = 'Very uncomfortable';
+            } else if (pressure > 1020 && humidity < 40) {
+                condition = 'Clear & Sunny ☀️';
+                visibility = 'Excellent';
+                precip = '0%';
+                comfort = 'Pleasant';
+            } else if (temp < 0) {
+                condition = 'Snow ❄️';
+                visibility = 'Fair';
+                precip = '60%';
+                comfort = 'Cold';
+            } else {
+                condition = 'Partly Cloudy ⛅';
+                visibility = 'Good';
+                precip = '20%';
+                comfort = 'Comfortable';
+            }
+            
+            document.getElementById('weatherCondition').textContent = condition;
+            document.getElementById('visibility').textContent = visibility;
+            document.getElementById('precipChance').textContent = precip;
+            document.getElementById('comfortIndex').textContent = comfort;
+            
+            // Draw weather scene
+            // Sky color based on conditions
+            if (condition.includes('Storm')) {
+                ctx.fillStyle = '#2c3e50';
+            } else if (condition.includes('Rainy')) {
+                ctx.fillStyle = '#7f8c8d';
+            } else if (condition.includes('Clear')) {
+                ctx.fillStyle = '#87ceeb';
+            } else {
+                ctx.fillStyle = '#95a5a6';
+            }
+            ctx.fillRect(0, 0, 700, 400);
+            
+            // Sun or moon
+            if (condition.includes('Clear') || condition.includes('Sunny')) {
+                ctx.beginPath();
+                ctx.arc(600, 80, 50, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffd700';
+                ctx.shadowBlur = 30;
+                ctx.shadowColor = '#ffd700';
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+            
+            // Clouds based on humidity
+            if (humidity > 50) {
+                ctx.fillStyle = humidity > 80 ? '#555' : '#ddd';
+                for (let i = 0; i < Math.floor(humidity / 20); i++) {
+                    const x = 100 + i * 150;
+                    ctx.beginPath();
+                    ctx.arc(x, 100 + i * 30, 40, 0, Math.PI * 2);
+                    ctx.arc(x + 40, 100 + i * 30, 50, 0, Math.PI * 2);
+                    ctx.arc(x + 90, 100 + i * 30, 40, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+            
+            // Precipitation
+            if (condition.includes('Rain') || condition.includes('Storm')) {
+                ctx.strokeStyle = '#4a90e2';
+                ctx.lineWidth = 2;
+                for (let i = 0; i < 50; i++) {
+                    const x = Math.random() * 700;
+                    const y = 150 + Math.random() * 250;
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(x - wind / 10, y + 20);
+                    ctx.stroke();
+                }
+            }
+            
+            if (condition.includes('Snow')) {
+                ctx.fillStyle = '#fff';
+                for (let i = 0; i < 100; i++) {
+                    const x = Math.random() * 700;
+                    const y = Math.random() * 400;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+            
+            // Ground
+            ctx.fillStyle = temp < 0 ? '#fff' : '#228b22';
+            ctx.fillRect(0, 400, 700, 100);
+            
+            // Wind indicator
+            if (wind > 0) {
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 3;
+                const windLength = wind * 2;
+                ctx.beginPath();
+                ctx.moveTo(50, 450);
+                ctx.lineTo(50 + windLength, 450);
+                ctx.stroke();
+                // Arrow
+                ctx.beginPath();
+                ctx.moveTo(50 + windLength, 450);
+                ctx.lineTo(50 + windLength - 10, 440);
+                ctx.lineTo(50 + windLength - 10, 460);
+                ctx.closePath();
+                ctx.fill();
+                
+                ctx.fillStyle = '#000';
+                ctx.font = '14px Arial';
+                ctx.fillText(wind + ' km/h', 50, 470);
+            }
+            
+            // Data panel
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+            ctx.fillRect(550, 20, 130, 120);
+            ctx.fillStyle = '#ffd700';
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText('Weather Data', 560, 40);
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#fff';
+            ctx.fillText('Temp: ' + temp + '°C', 560, 60);
+            ctx.fillText('Humid: ' + humidity + '%', 560, 80);
+            ctx.fillText('Press: ' + pressure + 'mb', 560, 100);
+            ctx.fillText('Wind: ' + wind + 'km/h', 560, 120);
+        }
+        
+        function randomWeather() {
+            document.getElementById('simTemp').value = Math.floor(Math.random() * 70) - 20;
+            document.getElementById('simHumidity').value = Math.floor(Math.random() * 100);
+            document.getElementById('simPressure').value = Math.floor(Math.random() * 100) + 950;
+            document.getElementById('simWind').value = Math.floor(Math.random() * 100);
+            simulateWeather();
+        }
+
+        // Quiz Data - 25 Questions
+        const quiz = [
+            {q: "What percentage of Earth's water is found in oceans?", o: ["75%", "85%", "97.5%", "50%"], c: 2},
+            {q: "Which process transforms water from liquid to vapor?", o: ["Condensation", "Precipitation", "Evaporation", "Collection"], c: 2},
+            {q: "What drives the water cycle?", o: ["Wind", "Solar energy", "Ocean currents", "Gravity only"], c: 1},
+            {q: "What is transpiration?", o: ["Rain falling", "Water evaporating from oceans", "Plants releasing water vapor", "Snow melting"], c: 2},
+            {q: "The most abundant greenhouse gas is:", o: ["Carbon dioxide", "Methane", "Water vapor", "Ozone"], c: 2},
+            {q: "Pre-industrial CO₂ levels were approximately:", o: ["280 ppm", "410 ppm", "200 ppm", "350 ppm"], c: 0},
+            {q: "The greenhouse effect is:", o: ["Always harmful", "Necessary for life on Earth", "Only caused by humans", "A recent phenomenon"], c: 1},
+            {q: "Which gas has increased most due to fossil fuel burning?", o: ["Oxygen", "Nitrogen", "Carbon dioxide", "Argon"], c: 2},
+            {q: "High clouds are found at altitudes of:", o: ["0-2 km", "2-6 km", "6-12 km", "Above 15 km"], c: 2},
+            {q: "Cirrus clouds are:", o: ["Low and thick", "Middle altitude", "High and wispy", "Ground level"], c: 2},
+            {q: "Cumulonimbus clouds are associated with:", o: ["Fair weather", "Thunderstorms", "Light drizzle", "Clear skies"], c: 1},
+            {q: "Clouds form when:", o: ["Air warms", "Humidity decreases", "Water vapor condenses", "Pressure increases"], c: 2},
+            {q: "Standard sea-level air pressure is:", o: ["1000 mb", "1013.25 mb", "1050 mb", "950 mb"], c: 1},
+            {q: "High pressure systems are associated with:", o: ["Stormy weather", "Clear, calm weather", "Heavy rain", "Tornadoes"], c: 1},
+            {q: "In a low pressure system, air:", o: ["Sinks", "Remains stationary", "Rises", "Flows horizontally only"], c: 2},
+            {q: "Rapidly falling pressure indicates:", o: ["Improving weather", "Approaching storm", "No change", "High winds only"], c: 1},
+            {q: "A barometer measures:", o: ["Temperature", "Humidity", "Air pressure", "Wind speed"], c: 2},
+            {q: "An anemometer measures:", o: ["Temperature", "Pressure", "Humidity", "Wind speed"], c: 3},
+            {q: "A hygrometer measures:", o: ["Pressure", "Wind", "Humidity", "Precipitation"], c: 2},
+            {q: "Weather satellites monitor from:", o: ["Ground level", "Mountains", "Space", "Balloons"], c: 2},
+            {q: "What causes wind?", o: ["Earth's rotation only", "Pressure differences", "Temperature only", "Ocean currents"], c: 1},
+            {q: "Dew point is the temperature at which:", o: ["Water boils", "Air condenses", "Ice melts", "Wind stops"], c: 1},
+            {q: "Relative humidity is:", o: ["Total water in air", "Ratio of actual to maximum water vapor", "Temperature of water", "Cloud coverage"], c: 1},
+            {q: "Weather fronts form where:", o: ["Air masses meet", "Mountains rise", "Oceans end", "Cities are located"], c: 0},
+            {q: "The primary source of atmospheric heat is:", o: ["Earth's core", "The Sun", "Ocean currents", "Human activity"], c: 1}
+        ];
+
+        function loadQuiz() {
+            const container = document.getElementById('quizQuestions');
+            container.innerHTML = '';
+            
+            quiz.forEach((item, i) => {
+                const div = document.createElement('div');
+                div.className = 'question';
+                div.innerHTML = `<h4>Question ${i + 1}: ${item.q}</h4>`;
+                
+                item.o.forEach((opt, j) => {
+                    const odiv = document.createElement('div');
+                    odiv.className = 'option';
+                    odiv.onclick = () => selectOption(i, j);
+                    odiv.innerHTML = `<input type="radio" name="q${i}" value="${j}" style="margin-right: 10px;"> ${opt}`;
+                    div.appendChild(odiv);
+                });
+                
+                container.appendChild(div);
+            });
+        }
+
+        function selectOption(qi, oi) {
+            const opts = document.querySelectorAll(`.question:nth-child(${qi + 1}) .option`);
+            opts.forEach(o => o.classList.remove('selected'));
+            opts[oi].classList.add('selected');
+            document.querySelector(`input[name="q${qi}"][value="${oi}"]`).checked = true;
+        }
+
+        function submitQuiz() {
+            let score = 0;
+            let answered = 0;
+            
+            quiz.forEach((item, i) => {
+                const sel = document.querySelector(`input[name="q${i}"]:checked`);
+                if (sel) {
+                    answered++;
+                    const opts = document.querySelectorAll(`.question:nth-child(${i + 1}) .option`);
+                    const si = parseInt(sel.value);
+                    
+                    if (si === item.c) {
+                        score++;
+                        opts[si].classList.add('correct');
+                    } else {
+                        opts[si].classList.add('incorrect');
+                        opts[item.c].classList.add('correct');
+                    }
+                }
+            });
+            
+            if (answered < quiz.length) {
+                alert(`Please answer all ${quiz.length} questions! (${answered} answered)`);
+                return;
+            }
+            
+            const pct = (score / quiz.length) * 100;
+            document.getElementById('finalScore').textContent = `Score: ${score}/${quiz.length} (${pct.toFixed(1)}%)`;
+            
+            let msg = pct >= 90 ? '🌟 Outstanding! Excellent mastery of meteorology!' : 
+                      pct >= 80 ? '⭐ Great work! Strong understanding!' : 
+                      pct >= 70 ? '✓ Good job! You passed!' : 
+                      pct >= 60 ? '📚 Fair attempt - review and retry' : 
+                      '📖 Please review the labs and retake';
+            
+            document.getElementById('scoreMessage').textContent = msg;
+            document.getElementById('scoreSection').classList.remove('hidden');
+            
+            if (pct >= 70) {
+                document.getElementById('certBtn').style.display = 'inline-block';
+            } else {
+                document.getElementById('certBtn').style.display = 'none';
+            }
+            
+            document.getElementById('scoreSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function generateCertificate() {
+            const score = document.getElementById('finalScore').textContent;
+            const pct = parseFloat(score.match(/\(([0-9.]+)%\)/)[1]);
+            
+            document.getElementById('certScore').textContent = score;
+            
+            let grade = pct >= 90 ? 'Grade: A - Outstanding' : 
+                        pct >= 80 ? 'Grade: B - Very Good' : 
+                        'Grade: C - Good';
+            document.getElementById('certGrade').textContent = grade;
+            
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('certDate').textContent = dateStr;
+            
+            document.getElementById('certificateSection').classList.remove('hidden');
+            document.getElementById('certificateSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function printCertificate() {
+            const name = document.getElementById('studentName').value;
+            if (!name.trim()) {
+                alert('Please enter your name first!');
+                return;
+            }
+            window.print();
+        }
+
+        function retakeQuiz() {
+            document.getElementById('scoreSection').classList.add('hidden');
+            document.getElementById('certificateSection').classList.add('hidden');
+            loadQuiz();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Initialize
+        window.onload = function() {
+            // Auto-initialize first lab animations if needed
+        };
+    </script>
+</body>
+</html>

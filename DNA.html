@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecology Lab - Biochemistry Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f766e 0%, #065f46 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+
+        h1 {
+            text-align: center;
+            color: #0f766e;
+            margin-bottom: 10px;
+            font-size: 2.8em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.2em;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab {
+            padding: 14px 28px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #0f766e 0%, #065f46 100%);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .lab-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 968px) {
+            .lab-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .experiment-area {
+            background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+            padding: 25px;
+            border-radius: 15px;
+            border: 3px solid #0f766e;
+        }
+
+        .result-area {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #0f766e;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+            align-items: center;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #0f766e 0%, #065f46 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        select, input[type="range"], input[type="number"] {
+            padding: 10px;
+            border: 2px solid #0f766e;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+        }
+
+        .enzyme-animation {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(to bottom, #e0f2f1, #b2dfdb);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid #0f766e;
+        }
+
+        .enzyme {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: #0f766e;
+            border-radius: 50%;
+            top: 50%;
+            left: 20%;
+            transform: translate(-50%, -50%);
+            animation: float 3s infinite ease-in-out;
+        }
+
+        .substrate {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #f97316;
+            border-radius: 8px;
+            top: 50%;
+            right: 20%;
+            transform: translate(50%, -50%);
+            animation: float 3s infinite ease-in-out 1.5s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+            50% { transform: translate(-50%, -50%) translateY(-20px); }
+        }
+
+        .test-tube {
+            width: 80px;
+            height: 150px;
+            background: linear-gradient(to bottom, transparent 30%, #3b82f6 30%);
+            border: 3px solid #333;
+            border-radius: 0 0 15px 15px;
+            margin: 10px;
+            display: inline-block;
+            position: relative;
+            transition: all 0.5s;
+        }
+
+        .test-tube::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: #333;
+            border-radius: 50% 50% 0 0;
+        }
+
+        .food-item {
+            display: inline-block;
+            padding: 20px;
+            margin: 10px;
+            background: white;
+            border: 3px solid #0f766e;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .food-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .food-item.selected {
+            background: linear-gradient(135deg, #0f766e 0%, #065f46 100%);
+            color: white;
+        }
+
+        .ph-scale {
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(to right, 
+                #ef4444 0%, 
+                #f97316 14%, 
+                #eab308 28%, 
+                #84cc16 42%, 
+                #22c55e 57%, 
+                #3b82f6 71%, 
+                #8b5cf6 85%, 
+                #a855f7 100%);
+            border-radius: 10px;
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .ph-indicator {
+            position: absolute;
+            width: 20px;
+            height: 80px;
+            background: #000;
+            top: -10px;
+            border-radius: 5px;
+            transition: left 0.3s;
+        }
+
+        .ph-label {
+            position: absolute;
+            bottom: -30px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .result-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 2px solid #0f766e;
+        }
+
+        .quiz-container {
+            margin: 20px 0;
+        }
+
+        .question {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid #0f766e;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .option {
+            padding: 12px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option:hover {
+            border-color: #0f766e;
+            background: #e0f2f1;
+        }
+
+        .option.correct {
+            border-color: #10b981;
+            background: #d1fae5;
+            font-weight: bold;
+        }
+
+        .option.incorrect {
+            border-color: #ef4444;
+            background: #fee2e2;
+        }
+
+        .score {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: #0f766e;
+            margin: 20px 0;
+            padding: 15px;
+            background: #e0f2f1;
+            border-radius: 10px;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #0f766e;
+            margin: 10px 0;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .data-table th, .data-table td {
+            padding: 12px;
+            border: 2px solid #0f766e;
+            text-align: center;
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, #0f766e 0%, #065f46 100%);
+            color: white;
+        }
+
+        .video-demo {
+            width: 100%;
+            height: 350px;
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .molecule {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, #3b82f6, #1e40af);
+            border-radius: 50%;
+            animation: drift 8s infinite linear;
+        }
+
+        @keyframes drift {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(100px, 50px) rotate(90deg); }
+            50% { transform: translate(200px, 0) rotate(180deg); }
+            75% { transform: translate(100px, -50px) rotate(270deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        .chart-bar {
+            display: inline-block;
+            width: 60px;
+            background: linear-gradient(to top, #0f766e, #14b8a6);
+            margin: 0 10px;
+            border-radius: 5px 5px 0 0;
+            position: relative;
+            transition: height 0.5s;
+        }
+
+        .chart-label {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Ecology Lab - Biochemistry Tester</h1>
+        <p class="subtitle">Interactive Virtual Laboratory</p>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showSection('enzymes')">🧬 Enzyme Tests</button>
+            <button class="tab" onclick="showSection('macromolecules')">🍎 Food Macromolecules</button>
+            <button class="tab" onclick="showSection('ph')">⚗️ pH Effects</button>
+            <button class="tab" onclick="showSection('quiz')">📝 Quiz</button>
+        </div>
+
+        <!-- Enzyme Tests Section -->
+        <div id="enzymes" class="section active">
+            <h2>Enzyme Activity Experiment</h2>
+            
+            <div class="video-demo">
+                <div class="enzyme-animation">
+                    <div class="enzyme"></div>
+                    <div class="substrate"></div>
+                    <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); color: #0f766e; font-weight: bold; font-size: 18px;">
+                        Enzyme-Substrate Complex Formation
+                    </div>
+                </div>
+            </div>
+
+            <div class="lab-container">
+                <div class="experiment-area">
+                    <h3>Experiment Controls</h3>
+                    <div class="controls">
+                        <label class="label">Select Enzyme:</label>
+                        <select id="enzymeType">
+                            <option value="amylase">Amylase (starch → sugar)</option>
+                            <option value="protease">Protease (protein → amino acids)</option>
+                            <option value="lipase">Lipase (fat → fatty acids)</option>
+                            <option value="catalase">Catalase (H₂O₂ → H₂O + O₂)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="controls">
+                        <label class="label">Temperature: <span id="tempValue">37</span>°C</label>
+                        <input type="range" id="temperature" min="0" max="100" value="37" oninput="updateTemp()">
+                    </div>
+                    
+                    <div class="controls">
+                        <label class="label">Substrate Concentration:</label>
+                        <input type="number" id="substrate" min="1" max="100" value="50"> mM
+                    </div>
+                    
+                    <button onclick="runEnzymeTest()">🔬 Run Experiment</button>
+                    <button onclick="compareEnzymes()">📊 Compare Activity</button>
+                </div>
+
+                <div class="result-area">
+                    <h3>Results</h3>
+                    <div id="enzymeResults">
+                        <p>Configure your experiment and click "Run Experiment" to see results...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Macromolecules Section -->
+        <div id="macromolecules" class="section">
+            <h2>Food Macromolecules Analysis</h2>
+            
+            <div class="video-demo">
+                <div class="molecule" style="left: 10%; top: 20%;"></div>
+                <div class="molecule" style="left: 30%; top: 60%; animation-delay: 2s;"></div>
+                <div class="molecule" style="left: 50%; top: 30%; animation-delay: 4s;"></div>
+                <div class="molecule" style="left: 70%; top: 70%; animation-delay: 6s;"></div>
+                <span style="z-index: 10;">Macromolecule Composition Visualization</span>
+            </div>
+
+            <h3>Select Food Items to Test:</h3>
+            <div style="text-align: center; margin: 20px 0;">
+                <div class="food-item" onclick="toggleFood('bread')">🍞 Bread</div>
+                <div class="food-item" onclick="toggleFood('meat')">🥩 Meat</div>
+                <div class="food-item" onclick="toggleFood('butter')">🧈 Butter</div>
+                <div class="food-item" onclick="toggleFood('apple')">🍎 Apple</div>
+                <div class="food-item" onclick="toggleFood('egg')">🥚 Egg</div>
+                <div class="food-item" onclick="toggleFood('milk')">🥛 Milk</div>
+            </div>
+
+            <div class="controls">
+                <label class="label">Test Type:</label>
+                <select id="testType">
+                    <option value="benedict">Benedict's Test (Sugars)</option>
+                    <option value="iodine">Iodine Test (Starch)</option>
+                    <option value="biuret">Biuret Test (Proteins)</option>
+                    <option value="sudan">Sudan IV Test (Lipids)</option>
+                </select>
+                <button onclick="testMacromolecules()">🧪 Perform Test</button>
+            </div>
+
+            <div class="result-area">
+                <h3>Test Results</h3>
+                <div id="macroResults">
+                    <p>Select food items and a test type to begin analysis...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- pH Effects Section -->
+        <div id="ph" class="section">
+            <h2>pH Effects on Biochemical Reactions</h2>
+            
+            <div class="lab-container">
+                <div class="experiment-area">
+                    <h3>pH Control</h3>
+                    <div class="ph-scale">
+                        <div class="ph-indicator" id="phIndicator" style="left: 50%;"></div>
+                        <span class="ph-label" style="left: 0;">0 (Acidic)</span>
+                        <span class="ph-label" style="left: 50%; transform: translateX(-50%);">7 (Neutral)</span>
+                        <span class="ph-label" style="right: 0;">14 (Basic)</span>
+                    </div>
+                    
+                    <div class="controls">
+                        <label class="label">pH Level: <span id="phValue">7.0</span></label>
+                        <input type="range" id="phSlider" min="0" max="14" step="0.5" value="7" oninput="updatePH()">
+                    </div>
+
+                    <div class="controls">
+                        <label class="label">Reaction Type:</label>
+                        <select id="reactionType">
+                            <option value="enzyme">Enzyme Activity</option>
+                            <option value="protein">Protein Denaturation</option>
+                            <option value="membrane">Membrane Stability</option>
+                        </select>
+                    </div>
+
+                    <button onclick="testPHEffect()">⚗️ Test pH Effect</button>
+                    <button onclick="optimizePH()">🎯 Find Optimal pH</button>
+                </div>
+
+                <div class="result-area">
+                    <h3>pH Effect Analysis</h3>
+                    <div style="text-align: center; margin: 20px;">
+                        <div class="test-tube" id="tube1"></div>
+                        <div class="test-tube" id="tube2"></div>
+                        <div class="test-tube" id="tube3"></div>
+                    </div>
+                    <div id="phResults">
+                        <p>Adjust pH and run test to see effects on biochemical reactions...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Section -->
+        <div id="quiz" class="section">
+            <h2>Biochemistry Quiz</h2>
+            <div class="score" id="scoreDisplay">Score: 0/25</div>
+            <div class="quiz-container" id="quizContainer"></div>
+            <button onclick="resetQuiz()">🔄 Reset Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        let score = 0;
+        let totalQuestions = 25;
+        let answeredQuestions = new Set();
+        let selectedFoods = new Set();
+
+        const questions = [
+            {q: "What are enzymes made of?", options: ["Lipids", "Proteins", "Carbohydrates", "Nucleic acids"], correct: 1},
+            {q: "What is the optimal pH for pepsin?", options: ["2 (acidic)", "7 (neutral)", "9 (basic)", "14 (very basic)"], correct: 0},
+            {q: "What are the four main macromolecules?", options: ["Only proteins", "Carbs, proteins, lipids, nucleic acids", "Only sugars", "Only fats"], correct: 1},
+            {q: "What does amylase break down?", options: ["Proteins", "Lipids", "Starch", "DNA"], correct: 2},
+            {q: "What is denaturation?", options: ["Protein synthesis", "Loss of protein structure", "DNA replication", "Cell division"], correct: 1},
+            {q: "What test detects starch?", options: ["Benedict's", "Iodine", "Biuret", "Sudan IV"], correct: 1},
+            {q: "What test detects proteins?", options: ["Iodine", "Benedict's", "Biuret", "Sudan IV"], correct: 2},
+            {q: "What test detects sugars?", options: ["Benedict's", "Iodine", "Biuret", "Sudan IV"], correct: 0},
+            {q: "What test detects lipids?", options: ["Benedict's", "Iodine", "Biuret", "Sudan IV"], correct: 3},
+            {q: "What is the monomer of proteins?", options: ["Glucose", "Amino acids", "Fatty acids", "Nucleotides"], correct: 1},
+            {q: "What is the monomer of carbohydrates?", options: ["Amino acids", "Nucleotides", "Monosaccharides", "Fatty acids"], correct: 2},
+            {q: "What does catalase break down?", options: ["Starch", "Protein", "Hydrogen peroxide", "Lipids"], correct: 2},
+            {q: "What is the optimal temperature for most human enzymes?", options: ["0°C", "37°C", "100°C", "50°C"], correct: 1},
+            {q: "What happens to enzymes at high temperatures?", options: ["They speed up", "They denature", "Nothing", "They multiply"], correct: 1},
+            {q: "What is a substrate?", options: ["An enzyme", "What enzymes act on", "A product", "A cell"], correct: 1},
+            {q: "What is an active site?", options: ["Where substrate binds to enzyme", "A type of cell", "A protein", "A lipid"], correct: 0},
+            {q: "What affects enzyme activity?", options: ["Only temperature", "Only pH", "Temperature, pH, and concentration", "Nothing"], correct: 2},
+            {q: "What are lipids mainly used for?", options: ["Quick energy", "Energy storage and membranes", "Genetic information", "Enzymes"], correct: 1},
+            {q: "What are carbohydrates used for?", options: ["Enzymes", "Energy", "Genetic material", "Antibodies"], correct: 1},
+            {q: "What element makes proteins unique?", options: ["Carbon", "Oxygen", "Nitrogen", "Hydrogen"], correct: 2},
+            {q: "What is pH?", options: ["Temperature measure", "Pressure measure", "H+ ion concentration", "Volume measure"], correct: 2},
+            {q: "What pH is neutral?", options: ["0", "7", "14", "10"], correct: 1},
+            {q: "What breaks down proteins?", options: ["Amylase", "Lipase", "Protease", "Catalase"], correct: 2},
+            {q: "What breaks down fats?", options: ["Amylase", "Lipase", "Protease", "Catalase"], correct: 1},
+            {q: "What color indicates starch with iodine?", options: ["Red", "Blue-black", "Green", "Yellow"], correct: 1}
+        ];
+
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(section).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function updateTemp() {
+            const temp = document.getElementById('temperature').value;
+            document.getElementById('tempValue').textContent = temp;
+        }
+
+        function updatePH() {
+            const ph = document.getElementById('phSlider').value;
+            document.getElementById('phValue').textContent = ph;
+            const indicator = document.getElementById('phIndicator');
+            indicator.style.left = (ph / 14 * 100) + '%';
+        }
+
+        function runEnzymeTest() {
+            const enzyme = document.getElementById('enzymeType').value;
+            const temp = document.getElementById('temperature').value;
+            const substrate = document.getElementById('substrate').value;
+            
+            let activity = 100;
+            let optimalTemp = 37;
+            
+            // Calculate activity based on temperature
+            if(Math.abs(temp - optimalTemp) > 20) {
+                activity = 20;
+            } else {
+                activity = 100 - Math.abs(temp - optimalTemp) * 3;
+            }
+            
+            const results = document.getElementById('enzymeResults');
+            results.innerHTML = `
+                <div class="result-box">
+                    <h4>Experiment Results:</h4>
+                    <p><strong>Enzyme:</strong> ${enzyme.charAt(0).toUpperCase() + enzyme.slice(1)}</p>
+                    <p><strong>Temperature:</strong> ${temp}°C</p>
+                    <p><strong>Substrate Concentration:</strong> ${substrate} mM</p>
+                    <p><strong>Enzyme Activity:</strong> ${activity.toFixed(1)}%</p>
+                    <p><strong>Status:</strong> ${activity > 70 ? '✓ Optimal' : activity > 40 ? '⚠ Suboptimal' : '✗ Poor'}</p>
+                </div>
+                <div style="margin-top: 20px;">
+                    <div class="chart-bar" style="height: ${activity * 2}px;"></div>
+                    <div class="chart-label">Activity Level</div>
+                </div>
+            `;
+        }
+
+        function compareEnzymes() {
+            const results = document.getElementById('enzymeResults');
+            results.innerHTML = `
+                <div class="result-box">
+                    <h4>Enzyme Comparison:</h4>
+                    <table class="data-table">
+                        <tr>
+                            <th>Enzyme</th>
+                            <th>Substrate</th>
+                            <th>Optimal pH</th>
+                            <th>Optimal Temp</th>
+                        </tr>
+                        <tr>
+                            <td>Amylase</td>
+                            <td>Starch</td>
+                            <td>7.0</td>
+                            <td>37°C</td>
+                        </tr>
+                        <tr>
+                            <td>Protease</td>
+                            <td>Proteins</td>
+                            <td>2.0</td>
+                            <td>37°C</td>
+                        </tr>
+                        <tr>
+                            <td>Lipase</td>
+                            <td>Fats</td>
+                            <td>8.0</td>
+                            <td>37°C</td>
+                        </tr>
+                        <tr>
+                            <td>Catalase</td>
+                            <td>H₂O₂</td>
+                            <td>7.0</td>
+                            <td>37°C</td>
+                        </tr>
+                    </table>
+                </div>
+            `;
+        }
+
+        function toggleFood(food) {
+            const element = event.target;
+            if(selectedFoods.has(food)) {
+                selectedFoods.delete(food);
+                element.classList.remove('selected');
+            } else {
+                selectedFoods.add(food);
+                element.classList.add('selected');
+            }
+        }
+
+        function testMacromolecules() {
+            if(selectedFoods.size === 0) {
+                alert('Please select at least one food item!');
+                return;
+            }
+
+            const testType = document.getElementById('testType').value;
+            const results = document.getElementById('macroResults');
+            
+            const foodData = {
+                bread: {benedict: 'Positive (reducing sugars)', iodine: 'Positive (starch)', biuret: 'Weak (some protein)', sudan: 'Negative'},
+                meat: {benedict: 'Negative', iodine: 'Negative', biuret: 'Strong Positive (high protein)', sudan: 'Positive (fats)'},
+                butter: {benedict: 'Negative', iodine: 'Negative', biuret: 'Negative', sudan: 'Strong Positive (lipids)'},
+                apple: {benedict: 'Positive (sugars)', iodine: 'Weak (some starch)', biuret: 'Negative', sudan: 'Negative'},
+                egg: {benedict: 'Negative', iodine: 'Negative', biuret: 'Strong Positive (protein)', sudan: 'Positive (lipids)'},
+                milk: {benedict: 'Positive (lactose)', iodine: 'Negative', biuret: 'Positive (protein)', sudan: 'Positive (fat)'}
+            };
+
+            const testNames = {
+                benedict: "Benedict's Test (Reducing Sugars)",
+                iodine: "Iodine Test (Starch)",
+                biuret: "Biuret Test (Proteins)",
+                sudan: "Sudan IV Test (Lipids)"
+            };
+
+            let html = `<div class="result-box"><h4>${testNames[testType]} Results:</h4><table class="data-table">
+                <tr><th>Food Item</th><th>Result</th></tr>`;
+            
+            selectedFoods.forEach(food => {
+                html += `<tr><td>${food.charAt(0).toUpperCase() + food.slice(1)}</td>
+                        <td>${foodData[food][testType]}</td></tr>`;
+            });
+            
+            html += `</table></div>`;
+            results.innerHTML = html;
+        }
+
+        function testPHEffect() {
+            const ph = document.getElementById('phSlider').value;
+            const reaction = document.getElementById('reactionType').value;
+            
+            let activity = 0;
+            let optimalPH = 7;
+            let status = '';
+            
+            if(reaction === 'enzyme') {
+                optimalPH = 7;
+                activity = 100 - Math.abs(ph - optimalPH) * 10;
+                status = activity > 70 ? 'High Activity' : activity > 40 ? 'Moderate Activity' : 'Low Activity';
+            } else if(reaction === 'protein') {
+                if(ph < 3 || ph > 11) {
+                    activity = 0;
+                    status = 'Denatured';
+                } else {
+                    activity = 100;
+                    status = 'Stable';
+                }
+            } else {
+                optimalPH = 7.4;
+                activity = 100 - Math.abs(ph - optimalPH) * 8;
+                status = activity > 70 ? 'Stable' : activity > 40 ? 'Compromised' : 'Unstable';
+            }
+            
+            activity = Math.max(0, Math.min(100, activity));
+            
+            // Update test tubes
+            const colors = ['#ef4444', '#eab308', '#22c55e'];
+            document.getElementById('tube1').style.background = 
+                `linear-gradient(to bottom, transparent 30%, ${colors[0]} 30%)`;
+            document.getElementById('tube2').style.background = 
+                `linear-gradient(to bottom, transparent 30%, ${colors[1]} 30%)`;
+            document.getElementById('tube3').style.background = 
+                `linear-gradient(to bottom, transparent 30%, ${colors[2]} 30%)`;
+            
+            const results = document.getElementById('phResults');
+            results.innerHTML = `
+                <div class="result-box">
+                    <h4>pH Effect Analysis:</h4>
+                    <p><strong>pH Level:</strong> ${ph}</p>
+                    <p><strong>Reaction Type:</strong> ${reaction}</p>
+                    <p><strong>Activity/Stability:</strong> ${activity.toFixed(1)}%</p>
+                    <p><strong>Status:</strong> ${status}</p>
+                    <p><strong>Observation:</strong> ${ph < 7 ? 'Acidic environment' : ph > 7 ? 'Basic environment' : 'Neutral environment'}</p>
+                </div>
+                <div style="margin-top: 20px;">
+                    <div class="chart-bar" style="height: ${activity * 2}px;"></div>
+                    <div class="chart-label">Activity/Stability</div>
+                </div>
+            `;
+        }
+
+        function optimizePH() {
+            const reaction = document.getElementById('reactionType').value;
+            let optimal = 7;
+            let range = '';
+            
+            if(reaction === 'enzyme') {
+                optimal = 7.0;
+                range = '6.5 - 7.5';
+            } else if(reaction === 'protein') {
+                optimal = 7.4;
+                range = '6.0 - 8.0';
+            } else {
+                optimal = 7.4;
+                range = '7.0 - 7.8';
+            }
+            
+            document.getElementById('phSlider').value = optimal;
+            updatePH();
+            
+            const results = document.getElementById('phResults');
+            results.innerHTML = `
+                <div class="result-box">
+                    <h4>Optimal pH Found:</h4>
+                    <p><strong>Reaction Type:</strong> ${reaction}</p>
+                    <p><strong>Optimal pH:</strong> ${optimal}</p>
+                    <p><strong>Optimal Range:</strong> ${range}</p>
+                    <p><strong>Note:</strong> pH has been adjusted to optimal value</p>
+                </div>
+            `;
+        }
+
+        function loadQuiz() {
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = '';
+            
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.innerHTML = `
+                    <p><strong>Question ${index + 1}:</strong> ${q.q}</p>
+                    <div class="options">
+                        ${q.options.map((opt, i) => `
+                            <div class="option" onclick="checkAnswer(${index}, ${i})">${opt}</div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(questionDiv);
+            });
+        }
+
+        function checkAnswer(questionIndex, optionIndex) {
+            if(answeredQuestions.has(questionIndex)) return;
+            
+            const question = questions[questionIndex];
+            const options = document.querySelectorAll('.question')[questionIndex].querySelectorAll('.option');
+            
+            if(optionIndex === question.correct) {
+                options[optionIndex].classList.add('correct');
+                score++;
+            } else {
+                options[optionIndex].classList.add('incorrect');
+                options[question.correct].classList.add('correct');
+            }
+            
+            answeredQuestions.add(questionIndex);
+            updateScore();
+        }
+
+        function updateScore() {
+            document.getElementById('scoreDisplay').textContent = `Score: ${score}/${totalQuestions}`;
+        }
+
+        function resetQuiz() {
+            score = 0;
+            answeredQuestions.clear();
+            loadQuiz();
+            updateScore();
+        }
+
+        // Initialize
+        loadQuiz();
+    </script>
+</body>
+</html>

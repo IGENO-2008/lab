@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genetics DNA Explorer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .tab:hover {
+            transform: translateY(-2px);
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dna-strand {
+            width: 100%;
+            height: 200px;
+            position: relative;
+            margin: 20px 0;
+            background: linear-gradient(to right, #e0e7ff, #f3e8ff);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .base-pair {
+            position: absolute;
+            width: 80px;
+            height: 10px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 5px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .chromosome {
+            display: inline-block;
+            width: 100px;
+            height: 150px;
+            background: linear-gradient(180deg, #667eea, #764ba2);
+            border-radius: 50px;
+            margin: 10px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .chromosome::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .result-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .quiz-container {
+            margin: 20px 0;
+        }
+
+        .question {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .option {
+            padding: 12px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .option.correct {
+            border-color: #10b981;
+            background: #d1fae5;
+        }
+
+        .option.incorrect {
+            border-color: #ef4444;
+            background: #fee2e2;
+        }
+
+        .score {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 20px 0;
+        }
+
+        input[type="text"], select {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 200px;
+        }
+
+        .inheritance-parent {
+            display: inline-block;
+            padding: 20px;
+            background: #f0f4ff;
+            border-radius: 10px;
+            margin: 10px;
+            min-width: 150px;
+        }
+
+        .offspring {
+            display: inline-block;
+            padding: 15px;
+            background: #e0e7ff;
+            border-radius: 8px;
+            margin: 5px;
+            min-width: 100px;
+        }
+
+        .video-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .dna-animation {
+            width: 100%;
+            max-width: 600px;
+            height: 300px;
+            margin: 0 auto;
+            position: relative;
+            background: linear-gradient(to bottom, #1e3a8a, #312e81);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .helix {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .helix-strand {
+            position: absolute;
+            width: 4px;
+            height: 100%;
+            background: #60a5fa;
+        }
+
+        .helix-left {
+            left: 30%;
+            animation: wave 3s infinite;
+        }
+
+        .helix-right {
+            right: 30%;
+            animation: wave 3s infinite 1.5s;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(20px); }
+        }
+
+        .label {
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧬 Genetics DNA Explorer</h1>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showSection('dna')">DNA Extraction</button>
+            <button class="tab" onclick="showSection('inheritance')">Inheritance Simulation</button>
+            <button class="tab" onclick="showSection('chromosomes')">Chromosome Analysis</button>
+            <button class="tab" onclick="showSection('quiz')">Quiz</button>
+        </div>
+
+        <!-- DNA Extraction Section -->
+        <div id="dna" class="section active">
+            <h2>DNA Extraction Simulation</h2>
+            
+            <div class="video-container">
+                <div class="dna-animation" id="dnaAnimation">
+                    <div class="helix">
+                        <div class="helix-strand helix-left"></div>
+                        <div class="helix-strand helix-right"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button onclick="extractDNA()">Extract DNA</button>
+                <button onclick="sequenceDNA()">Sequence DNA</button>
+                <button onclick="analyzeDNA()">Analyze DNA</button>
+            </div>
+
+            <div class="result-box" id="dnaResult">
+                <p>Click "Extract DNA" to begin the extraction process...</p>
+            </div>
+
+            <div class="dna-strand" id="dnaStrand"></div>
+        </div>
+
+        <!-- Inheritance Simulation Section -->
+        <div id="inheritance" class="section">
+            <h2>Genetic Inheritance Simulator</h2>
+            
+            <div class="controls">
+                <label class="label">Parent 1 Genotype:</label>
+                <select id="parent1">
+                    <option value="AA">AA (Homozygous Dominant)</option>
+                    <option value="Aa">Aa (Heterozygous)</option>
+                    <option value="aa">aa (Homozygous Recessive)</option>
+                </select>
+                
+                <label class="label">Parent 2 Genotype:</label>
+                <select id="parent2">
+                    <option value="AA">AA (Homozygous Dominant)</option>
+                    <option value="Aa">Aa (Heterozygous)</option>
+                    <option value="aa">aa (Homozygous Recessive)</option>
+                </select>
+                
+                <button onclick="simulateInheritance()">Simulate Inheritance</button>
+            </div>
+
+            <div class="result-box" id="inheritanceResult"></div>
+        </div>
+
+        <!-- Chromosome Analysis Section -->
+        <div id="chromosomes" class="section">
+            <h2>Chromosome Analysis</h2>
+            
+            <div class="controls">
+                <button onclick="showKaryotype()">Generate Karyotype</button>
+                <button onclick="analyzeMutation()">Detect Mutations</button>
+                <button onclick="compareChromosomes()">Compare Chromosomes</button>
+            </div>
+
+            <div class="result-box" id="chromosomeResult">
+                <p>Human cells contain 46 chromosomes (23 pairs)</p>
+            </div>
+
+            <div id="chromosomeDisplay" class="grid"></div>
+        </div>
+
+        <!-- Quiz Section -->
+        <div id="quiz" class="section">
+            <h2>Genetics Quiz</h2>
+            <div class="score" id="scoreDisplay">Score: 0/25</div>
+            <div class="quiz-container" id="quizContainer"></div>
+            <button onclick="resetQuiz()" style="margin-top: 20px;">Reset Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        let score = 0;
+        let totalQuestions = 25;
+        let answeredQuestions = new Set();
+
+        const questions = [
+            {q: "What does DNA stand for?", options: ["Deoxyribonucleic Acid", "Deoxyribose Nucleic Acid", "Dynamic Nuclear Acid", "Digital Nuclear Acid"], correct: 0},
+            {q: "How many chromosomes do humans have?", options: ["23", "46", "44", "48"], correct: 1},
+            {q: "What are the four DNA bases?", options: ["A, T, G, C", "A, U, G, C", "A, T, X, Y", "B, C, D, E"], correct: 0},
+            {q: "What is a gene?", options: ["A segment of DNA", "A type of protein", "A cell organelle", "A chromosome"], correct: 0},
+            {q: "What is the shape of DNA?", options: ["Single helix", "Double helix", "Triple helix", "Linear"], correct: 1},
+            {q: "Which base pairs with Adenine?", options: ["Guanine", "Cytosine", "Thymine", "Uracil"], correct: 2},
+            {q: "Which base pairs with Guanine?", options: ["Adenine", "Thymine", "Cytosine", "Uracil"], correct: 2},
+            {q: "What is a chromosome?", options: ["A protein structure", "Packaged DNA", "A cell membrane", "A mitochondrion"], correct: 1},
+            {q: "What does homozygous mean?", options: ["Two different alleles", "Two identical alleles", "No alleles", "Multiple alleles"], correct: 1},
+            {q: "What does heterozygous mean?", options: ["Two identical alleles", "Two different alleles", "No alleles", "Three alleles"], correct: 1},
+            {q: "What is an allele?", options: ["A variant of a gene", "A type of cell", "A chromosome", "A protein"], correct: 0},
+            {q: "Who discovered DNA structure?", options: ["Darwin", "Mendel", "Watson and Crick", "Einstein"], correct: 2},
+            {q: "What is a genotype?", options: ["Physical traits", "Genetic makeup", "Cell type", "Organism type"], correct: 1},
+            {q: "What is a phenotype?", options: ["Genetic makeup", "Observable traits", "DNA sequence", "Chromosome number"], correct: 1},
+            {q: "What is a mutation?", options: ["Normal DNA replication", "Change in DNA sequence", "Cell division", "Protein synthesis"], correct: 1},
+            {q: "Where is DNA located in cells?", options: ["Cytoplasm only", "Nucleus", "Cell membrane", "Ribosome"], correct: 1},
+            {q: "What is mitosis?", options: ["Cell death", "Cell division", "DNA damage", "Protein creation"], correct: 1},
+            {q: "What is meiosis?", options: ["Body cell division", "Sex cell division", "Cell growth", "DNA repair"], correct: 1},
+            {q: "What determines biological sex?", options: ["X and Y chromosomes", "Autosomes", "DNA length", "Cell size"], correct: 0},
+            {q: "What is a dominant allele?", options: ["Always hidden", "Expressed when present", "Never expressed", "Rare variant"], correct: 1},
+            {q: "What is a recessive allele?", options: ["Always expressed", "Expressed only when homozygous", "Never expressed", "Most common"], correct: 1},
+            {q: "What is crossing over?", options: ["Cell death", "Exchange of genetic material", "DNA replication", "Cell division"], correct: 1},
+            {q: "What is genetic variation?", options: ["All organisms being identical", "Differences in DNA between individuals", "Cell types", "Tissue types"], correct: 1},
+            {q: "What is RNA?", options: ["Same as DNA", "Ribonucleic acid", "A protein", "A lipid"], correct: 1},
+            {q: "What is the purpose of DNA?", options: ["Energy storage", "Genetic information storage", "Structural support", "Transport"], correct: 1}
+        ];
+
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(section).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function extractDNA() {
+            const result = document.getElementById('dnaResult');
+            result.innerHTML = `
+                <h3>DNA Extraction Process:</h3>
+                <p>1. Cell lysis: Breaking open cells to release DNA</p>
+                <p>2. Protein removal: Separating proteins from DNA</p>
+                <p>3. DNA precipitation: Making DNA visible</p>
+                <p>4. DNA purification: Isolating pure DNA</p>
+                <p><strong>Status: DNA successfully extracted! ✓</strong></p>
+            `;
+            createDNAStrand();
+        }
+
+        function createDNAStrand() {
+            const strand = document.getElementById('dnaStrand');
+            strand.innerHTML = '';
+            const bases = ['A', 'T', 'G', 'C'];
+            
+            for(let i = 0; i < 10; i++) {
+                const pair = document.createElement('div');
+                pair.className = 'base-pair';
+                pair.style.top = (i * 20) + 'px';
+                pair.innerHTML = `<span style="color:white;font-weight:bold;">${bases[Math.floor(Math.random()*4)]}-${bases[Math.floor(Math.random()*4)]}</span>`;
+                strand.appendChild(pair);
+            }
+        }
+
+        function sequenceDNA() {
+            const bases = ['A', 'T', 'G', 'C'];
+            let sequence = '';
+            for(let i = 0; i < 50; i++) {
+                sequence += bases[Math.floor(Math.random() * 4)];
+                if((i+1) % 10 === 0) sequence += ' ';
+            }
+            
+            document.getElementById('dnaResult').innerHTML = `
+                <h3>DNA Sequence:</h3>
+                <p style="font-family: monospace; background: white; padding: 15px; border-radius: 5px;">${sequence}</p>
+                <p><strong>Sequence length: 50 base pairs</strong></p>
+            `;
+        }
+
+        function analyzeDNA() {
+            document.getElementById('dnaResult').innerHTML = `
+                <h3>DNA Analysis Results:</h3>
+                <p><strong>GC Content:</strong> 52%</p>
+                <p><strong>AT Content:</strong> 48%</p>
+                <p><strong>Genes Identified:</strong> 3</p>
+                <p><strong>Mutations Detected:</strong> 0</p>
+                <p><strong>DNA Quality:</strong> Excellent ✓</p>
+            `;
+        }
+
+        function simulateInheritance() {
+            const p1 = document.getElementById('parent1').value;
+            const p2 = document.getElementById('parent2').value;
+            
+            const alleles1 = p1.split('');
+            const alleles2 = p2.split('');
+            
+            let offspring = [];
+            for(let a1 of alleles1) {
+                for(let a2 of alleles2) {
+                    offspring.push(a1 + a2);
+                }
+            }
+            
+            const counts = {};
+            offspring.forEach(o => counts[o] = (counts[o] || 0) + 1);
+            
+            let result = `<h3>Punnett Square Results:</h3>`;
+            result += `<div class="inheritance-parent">Parent 1: ${p1}</div>`;
+            result += `<div class="inheritance-parent">Parent 2: ${p2}</div>`;
+            result += `<h4>Offspring Genotypes:</h4>`;
+            
+            for(let genotype in counts) {
+                const percentage = (counts[genotype] / offspring.length * 100).toFixed(1);
+                result += `<div class="offspring">${genotype}: ${percentage}%</div>`;
+            }
+            
+            document.getElementById('inheritanceResult').innerHTML = result;
+        }
+
+        function showKaryotype() {
+            const display = document.getElementById('chromosomeDisplay');
+            display.innerHTML = '<h3>Human Karyotype (23 pairs):</h3>';
+            
+            for(let i = 1; i <= 23; i++) {
+                const pair = document.createElement('div');
+                pair.innerHTML = `
+                    <div style="text-align:center;">
+                        <p><strong>Pair ${i}</strong></p>
+                        <div class="chromosome"></div>
+                        <div class="chromosome"></div>
+                    </div>
+                `;
+                display.appendChild(pair);
+            }
+            
+            document.getElementById('chromosomeResult').innerHTML = `
+                <p><strong>Karyotype Generated Successfully!</strong></p>
+                <p>Showing all 23 chromosome pairs (46 total chromosomes)</p>
+                <p>Pairs 1-22: Autosomes</p>
+                <p>Pair 23: Sex chromosomes (XX or XY)</p>
+            `;
+        }
+
+        function analyzeMutation() {
+            const mutations = ['Point mutation', 'Insertion', 'Deletion', 'Duplication'];
+            const randomMutation = mutations[Math.floor(Math.random() * mutations.length)];
+            
+            document.getElementById('chromosomeResult').innerHTML = `
+                <h3>Mutation Analysis:</h3>
+                <p><strong>Scan Complete:</strong> ✓</p>
+                <p><strong>Mutation Type:</strong> ${randomMutation}</p>
+                <p><strong>Location:</strong> Chromosome ${Math.floor(Math.random() * 23) + 1}</p>
+                <p><strong>Clinical Significance:</strong> Under investigation</p>
+            `;
+        }
+
+        function compareChromosomes() {
+            document.getElementById('chromosomeResult').innerHTML = `
+                <h3>Chromosome Comparison:</h3>
+                <p><strong>Sample A vs Sample B:</strong></p>
+                <p>Similarity: 99.9%</p>
+                <p>Differences: 0.1% (typical human variation)</p>
+                <p>Structural variations: 2 detected</p>
+                <p>Copy number variants: 1 detected</p>
+            `;
+        }
+
+        function loadQuiz() {
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = '';
+            
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.innerHTML = `
+                    <p><strong>Question ${index + 1}:</strong> ${q.q}</p>
+                    <div class="options">
+                        ${q.options.map((opt, i) => `
+                            <div class="option" onclick="checkAnswer(${index}, ${i})">${opt}</div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(questionDiv);
+            });
+        }
+
+        function checkAnswer(questionIndex, optionIndex) {
+            if(answeredQuestions.has(questionIndex)) return;
+            
+            const question = questions[questionIndex];
+            const options = document.querySelectorAll('.question')[questionIndex].querySelectorAll('.option');
+            
+            if(optionIndex === question.correct) {
+                options[optionIndex].classList.add('correct');
+                score++;
+            } else {
+                options[optionIndex].classList.add('incorrect');
+                options[question.correct].classList.add('correct');
+            }
+            
+            answeredQuestions.add(questionIndex);
+            updateScore();
+        }
+
+        function updateScore() {
+            document.getElementById('scoreDisplay').textContent = `Score: ${score}/${totalQuestions}`;
+        }
+
+        function resetQuiz() {
+            score = 0;
+            answeredQuestions.clear();
+            loadQuiz();
+            updateScore();
+        }
+
+        // Initialize
+        loadQuiz();
+        createDNAStrand();
+    </script>
+</body>
+</html>

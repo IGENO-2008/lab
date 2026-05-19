@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oceanography Lab - Salinity, Tides & Waves</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0077be 0%, #00a8cc 50%, #4dd0e1 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #0077be;
+            position: relative;
+        }
+
+        h1 {
+            color: #0077be;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            color: #00695c;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+
+        .wave-animation {
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            overflow: hidden;
+        }
+
+        .wave {
+            position: absolute;
+            width: 200%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 20"><path d="M0,10 Q300,0 600,10 T1200,10 L1200,20 L0,20 Z" fill="%230077be" opacity="0.3"/></svg>');
+            animation: wave 8s linear infinite;
+        }
+
+        @keyframes wave {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background: #e0f7fa;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: #00695c;
+        }
+
+        .tab-btn:hover {
+            background: #b2ebf2;
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #0077be 0%, #00a8cc 100%);
+            color: white;
+        }
+
+        .experiment-section {
+            display: none;
+        }
+
+        .experiment-section.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .experiment-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #0077be;
+        }
+
+        .experiment-title {
+            color: #0077be;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .media-container {
+            margin: 20px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            background: #f0f8ff;
+        }
+
+        .media-container img,
+        .media-container video {
+            width: 100%;
+            display: block;
+        }
+
+        .experiment-description {
+            line-height: 1.8;
+            color: #444;
+            margin-bottom: 20px;
+            background: #e0f7fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .materials,
+        .procedure {
+            margin: 20px 0;
+        }
+
+        .section-title {
+            color: #00695c;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .materials ul,
+        .procedure ol {
+            margin-left: 20px;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        .materials li,
+        .procedure li {
+            margin-bottom: 8px;
+        }
+
+        .interactive-demo {
+            background: linear-gradient(to bottom, #87ceeb 0%, #1e3a8a 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+            min-height: 400px;
+        }
+
+        .ocean-floor {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(to bottom, #8b7355, #654321);
+            border-radius: 50% 50% 0 0;
+        }
+
+        .ocean-surface {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            animation: oceanWave 3s ease-in-out infinite;
+        }
+
+        @keyframes oceanWave {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #0077be;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #0077be;
+            transition: all 0.3s;
+        }
+
+        .control-btn:hover {
+            background: #0077be;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .fish {
+            position: absolute;
+            font-size: 2em;
+            animation: swim 15s linear infinite;
+        }
+
+        @keyframes swim {
+            0% { left: -50px; }
+            100% { left: calc(100% + 50px); }
+        }
+
+        .tide-indicator {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .wave-simulator {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(to bottom, #87ceeb, #4682b4);
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .wave-line {
+            position: absolute;
+            width: 200%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .quiz-section {
+            background: #e0f7fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .question {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #0077be;
+        }
+
+        .question-text {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .option {
+            padding: 10px 15px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option:hover {
+            background: #e0e0e0;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: #0077be;
+            color: white;
+        }
+
+        .option.correct {
+            background: #4caf50;
+            color: white;
+        }
+
+        .option.incorrect {
+            background: #f44336;
+            color: white;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #0077be 0%, #00a8cc 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 119, 190, 0.4);
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #0077be;
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+        }
+
+        .salinity-meter {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .meter-bar {
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(to right, #e3f2fd, #0077be, #004d40);
+            border-radius: 20px;
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .meter-indicator {
+            position: absolute;
+            width: 4px;
+            height: 50px;
+            background: red;
+            top: -5px;
+            transition: left 0.5s;
+        }
+
+        .info-box {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #ff9800;
+        }
+
+        .info-box strong {
+            color: #e65100;
+        }
+
+        .depth-zone {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .zone {
+            flex: 1;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .sunlight-zone { background: #42a5f5; }
+        .twilight-zone { background: #1976d2; }
+        .midnight-zone { background: #0d47a1; }
+        .abyssal-zone { background: #01579b; }
+        .hadal-zone { background: #002171; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌊 Oceanography Lab</h1>
+            <p class="subtitle">Explore Salinity, Tides, Waves & Ocean Science</p>
+            <div class="wave-animation">
+                <div class="wave"></div>
+            </div>
+        </header>
+
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="showTab('salinity')">💧 Salinity</button>
+            <button class="tab-btn" onclick="showTab('tides')">🌙 Tides</button>
+            <button class="tab-btn" onclick="showTab('waves')">🌊 Waves</button>
+            <button class="tab-btn" onclick="showTab('currents')">🔄 Currents</button>
+            <button class="tab-btn" onclick="showTab('ocean-zones')">🐠 Ocean Zones</button>
+            <button class="tab-btn" onclick="showTab('interactive')">🎮 Interactive</button>
+            <button class="tab-btn" onclick="showTab('quiz')">🧠 Quiz</button>
+        </div>
+
+        <!-- Salinity Experiment -->
+        <div id="salinity" class="experiment-section active">
+            <div class="experiment-card">
+                <h2 class="experiment-title">💧 Ocean Salinity Experiment</h2>
+                
+                <div class="media-container">
+                    <svg width="100%" height="400" viewBox="0 0 800 400">
+                        <!-- Background -->
+                        <rect width="800" height="400" fill="#e3f2fd"/>
+                        
+                        <!-- Title -->
+                        <text x="400" y="30" font-size="24" fill="#333" font-weight="bold" text-anchor="middle">Density and Salinity</text>
+                        
+                        <!-- Fresh Water Glass -->
+                        <g id="freshwater">
+                            <rect x="100" y="150" width="150" height="200" fill="#87ceeb" stroke="#1976d2" stroke-width="3" rx="5"/>
+                            <text x="175" y="370" font-size="16" fill="#333" font-weight="bold" text-anchor="middle">Fresh Water</text>
+                            
+                            <!-- Egg sinking -->
+                            <ellipse cx="175" cy="300" rx="25" ry="35" fill="#fff" stroke="#ffa726" stroke-width="2"/>
+                            <path d="M 175 280 L 175 320" stroke="#f44336" stroke-width="2" marker-end="url(#arrowdown)"/>
+                            <text x="175" y="140" font-size="14" fill="#f44336" text-anchor="middle">Egg Sinks</text>
+                        </g>
+                        
+                        <!-- Salt Water Glass -->
+                        <g id="saltwater">
+                            <rect x="550" y="150" width="150" height="200" fill="#4dd0e1" stroke="#0277bd" stroke-width="3" rx="5"/>
+                            <text x="625" y="370" font-size="16" fill="#333" font-weight="bold" text-anchor="middle">Salt Water</text>
+                            
+                            <!-- Egg floating -->
+                            <ellipse cx="625" cy="180" rx="25" ry="35" fill="#fff" stroke="#ffa726" stroke-width="2"/>
+                            <path d="M 625 220 L 625 180" stroke="#4caf50" stroke-width="2" marker-end="url(#arrowup)"/>
+                            <text x="625" y="140" font-size="14" fill="#4caf50" text-anchor="middle">Egg Floats</text>
+                            
+                            <!-- Salt crystals -->
+                            <circle cx="600" cy="300" r="3" fill="#fff"/>
+                            <circle cx="620" cy="320" r="3" fill="#fff"/>
+                            <circle cx="640" cy="310" r="3" fill="#fff"/>
+                            <circle cx="610" cy="280" r="3" fill="#fff"/>
+                        </g>
+                        
+                        <!-- Middle container showing salt addition -->
+                        <g id="process">
+                            <rect x="325" y="150" width="150" height="200" fill="#87ceeb" stroke="#1976d2" stroke-width="3" rx="5"/>
+                            <text x="400" y="370" font-size="16" fill="#333" font-weight="bold" text-anchor="middle">Adding Salt</text>
+                            
+                            <!-- Salt being added -->
+                            <rect x="380" y="100" width="40" height="50" fill="#fff" stroke="#999" stroke-width="2"/>
+                            <text x="400" y="128" font-size="12" fill="#333" text-anchor="middle">SALT</text>
+                            <circle cx="395" cy="150" r="2" fill="#fff"/>
+                            <circle cx="405" cy="155" r="2" fill="#fff"/>
+                            <circle cx="400" cy="160" r="2" fill="#fff"/>
+                        </g>
+                        
+                        <!-- Arrows -->
+                        <path d="M 255 250 L 320 250" stroke="#0077be" stroke-width="3" marker-end="url(#arrowright)"/>
+                        <path d="M 480 250 L 545 250" stroke="#0077be" stroke-width="3" marker-end="url(#arrowright)"/>
+                        
+                        <defs>
+                            <marker id="arrowdown" markerWidth="10" markerHeight="10" refX="5" refY="8" orient="auto">
+                                <path d="M 0 0 L 5 8 L 10 0 Z" fill="#f44336"/>
+                            </marker>
+                            <marker id="arrowup" markerWidth="10" markerHeight="10" refX="5" refY="2" orient="auto">
+                                <path d="M 0 8 L 5 0 L 10 8 Z" fill="#4caf50"/>
+                            </marker>
+                            <marker id="arrowright" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <path d="M 0 0 L 0 6 L 9 3 Z" fill="#0077be"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+
+                <div class="experiment-description">
+                    <p><strong>Salinity</strong> is the measure of dissolved salts in water. Ocean water has an average salinity of 35 parts per thousand (ppt), meaning 35 grams of salt per kilogram of water. This experiment demonstrates how salt affects water density and buoyancy!</p>
+                </div>
+
+                <div class="salinity-meter">
+                    <h3 class="section-title">Interactive Salinity Meter</h3>
+                    <p>Adjust the salinity level: <span id="salinityValue">35</span> ppt</p>
+                    <input type="range" min="0" max="70" value="35" style="width: 100%;" oninput="updateSalinity(this.value)">
+                    <div class="meter-bar">
+                        <div class="meter-indicator" id="salinityIndicator"></div>
+                    </div>
+                    <p id="salinityDescription"></p>
+                </div>
+
+                <div class="materials">
+                    <h3 class="section-title">Materials Needed:</h3>
+                    <ul>
+                        <li>Two clear glasses or containers</li>
+                        <li>Water (room temperature)</li>
+                        <li>Table salt (6-8 tablespoons)</li>
+                        <li>Two raw eggs</li>
+                        <li>Spoon for stirring</li>
+                        <li>Measuring spoons (optional)</li>
+                    </ul>
+                </div>
+
+                <div class="procedure">
+                    <h3 class="section-title">Procedure:</h3>
+                    <ol>
+                        <li>Fill both glasses with equal amounts of water (about 3/4 full)</li>
+                        <li>Add 6-8 tablespoons of salt to one glass and stir until dissolved</li>
+                        <li>Leave the other glass with fresh water only</li>
+                        <li>Carefully place one egg in the fresh water glass</li>
+                        <li>Observe that the egg sinks to the bottom</li>
+                        <li>Place the second egg in the salt water glass</li>
+                        <li>Observe that the egg floats in the salt water!</li>
+                        <li>Try adding more salt to make the egg float higher</li>
+                    </ol>
+                </div>
+
+                <div class="info-box">
+                    <strong>Why does this happen?</strong> Salt water is denser than fresh water. The dissolved salt increases the water's density, making it capable of supporting objects that would normally sink in fresh water. This is why it's easier to float in the ocean than in a swimming pool!
+                </div>
+            </div>
+        </div>
+
+        <!-- Tides Experiment -->
+        <div id="tides" class="experiment-section">
+            <div class="experiment-card">
+                <h2 class="experiment-title">🌙 Understanding Tides</h2>
+                
+                <div class="media-container">
+                    <svg width="100%" height="450" viewBox="0 0 800 450">
+                        <!-- Space background -->
+                        <rect width="800" height="450" fill="#001a33"/>
+                        <circle cx="100" cy="50" r="1" fill="white"/>
+                        <circle cx="200" cy="80" r="1" fill="white"/>
+                        <circle cx="700" cy="60" r="1" fill="white"/>
+                        <circle cx="600" cy="100" r="1" fill="white"/>
+                        
+                        <!-- Title -->
+                        <text x="400" y="30" font-size="24" fill="white" font-weight="bold" text-anchor="middle">Tides - Gravitational Pull</text>
+                        
+                        <!-- Moon -->
+                        <circle cx="650" cy="150" r="50" fill="#d3d3d3"/>
+                        <circle cx="640" cy="140" r="8" fill="#a9a9a9"/>
+                        <circle cx="665" cy="155" r="12" fill="#a9a9a9"/>
+                        <circle cx="655" cy="170" r="6" fill="#a9a9a9"/>
+                        <text x="650" y="220" font-size="14" fill="white" text-anchor="middle" font-weight="bold">Moon</text>
+                        
+                        <!-- Earth -->
+                        <circle cx="300" cy="250" r="80" fill="#4dd0e1"/>
+                        <ellipse cx="280" cy="230" rx="30" ry="25" fill="#4caf50"/>
+                        <ellipse cx="320" cy="260" rx="35" ry="30" fill="#4caf50"/>
+                        
+                        <!-- Tidal bulges -->
+                        <ellipse cx="380" cy="250" rx="15" ry="30" fill="#0077be" opacity="0.7"/>
+                        <ellipse cx="220" cy="250" rx="15" ry="30" fill="#0077be" opacity="0.7"/>
+                        
+                        <!-- Gravitational pull lines -->
+                        <line x1="380" y1="250" x2="600" y2="150" stroke="#ffd700" stroke-width="2" stroke-dasharray="5,5"/>
+                        <line x1="220" y1="250" x2="150" y2="150" stroke="#ffd700" stroke-width="2" stroke-dasharray="5,5"/>
+                        
+                        <!-- Labels -->
+                        <text x="400" y="240" font-size="12" fill="white" font-weight="bold">High Tide</text>
+                        <text x="200" y="240" font-size="12" fill="white" font-weight="bold">High Tide</text>
+                        <text x="300" y="180" font-size="12" fill="white" font-weight="bold">Low Tide</text>
+                        <text x="300" y="330" font-size="12" fill="white" font-weight="bold">Low Tide</text>
+                        
+                        <!-- Beach scene at bottom -->
+                        <rect x="0" y="370" width="800" height="80" fill="#c2b280"/>
+                        <text x="400" y="395" font-size="18" fill="#333" font-weight="bold" text-anchor="middle">Tidal Cycle on Beach</text>
+                        
+                        <!-- High tide marker -->
+                        <line x1="100" y1="405" x2="250" y2="405" stroke="#0077be" stroke-width="4"/>
+                        <text x="175" y="425" font-size="12" fill="#333" text-anchor="middle">High Tide Line</text>
+                        
+                        <!-- Low tide marker -->
+                        <line x1="550" y1="430" x2="700" y2="430" stroke="#8b4513" stroke-width="4"/>
+                        <text x="625" y="445" font-size="12" fill="#333" text-anchor="middle">Low Tide Line</text>
+                    </svg>
+                </div>
+
+                <div class="experiment-description">
+                    <p><strong>Tides</strong> are the rise and fall of sea levels caused by the gravitational forces exerted by the Moon and Sun, and the rotation of Earth. The Moon's gravity pulls on Earth's oceans, creating two tidal bulges - one facing the Moon and one on the opposite side.</p>
+                </div>
+
+                <div class="info-box">
+                    <strong>Tidal Facts:</strong>
+                    <ul style="margin-top: 10px; margin-left: 20px;">
+                        <li>Most places experience two high tides and two low tides per day</li>
+                        <li>Spring tides (highest) occur during full and new moons</li>
+                        <li>Neap tides (lowest) occur during quarter moons</li>
+                        <li>Tidal range can vary from inches to over 50 feet!</li>
+                    </ul>
+                </div>
+
+                <div class="materials">
+                    <h3 class="section-title">Materials Needed:</h3>
+                    <ul>
+                        <li>Large shallow container or tray</li>
+                        <li>Water</li>
+                        <li>Small ball (to represent Moon)</li>
+                        <li>Toy boat or floating object</li>
+                        <li>Ruler or measuring stick</li>
+                        <li>Notebook for observations</li>
+                    </ul>
+                </div>
+
+                <div class="procedure">
+                    <h3 class="section-title">Procedure:</h3>
+                    <ol>
+                        <li>Fill the container halfway with water</li>
+                        <li>Mark the current water level on the side</li>
+                        <li>Place the toy boat in the center</li>
+                        <li>Hold the ball (Moon) close to one side of the container</li>
+                        <li>Observe how the water slightly shifts toward the ball</li>
+                        <li>Move the ball around the container slowly</li>
+                        <li>Watch how the water level changes as the "Moon" moves</li>
+                        <li>Note the boat's position at different "tide" levels</li>
+                        <li>Record your observations about how the Moon's position affects tides</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Waves Experiment -->
+        <div id="waves" class="experiment-section">
+            <div class="experiment-card">
+                <h2 class="experiment-title">🌊 Wave Formation and Motion</h2>
+                
+                <div class="media-container">
+                    <svg width="100%" height="400" viewBox="0 0 800 400">
+                        <!-- Background -->
+                        <rect width="800" height="400" fill="#e3f2fd"/>
+                        
+                        <!-- Title -->
+                        <text x="400" y="30" font-size="24" fill="#333" font-weight="bold" text-anchor="middle">Wave Anatomy and Motion</text>
+                        
+                        <!-- Wave diagram -->
+                        <path d="M 50 200 Q 150 100, 250 200 T 450 200 T 650 200 T 750 200" 
+                              stroke="#0077be" stroke-width="4" fill="none"/>
+                        
+                        <!-- Wavelength -->
+                        <line x1="50" y1="250" x2="450" y2="250" stroke="#f44336" stroke-width="2"/>
+                        <line x1="50" y1="245" x2="50" y2="255" stroke="#f44336" stroke-width="2"/>
+                        <line x1="450" y1="245" x2="450" y2="255" stroke="#f44336" stroke-width="2"/>
+                        <text x="250" y="275" font-size="16" fill="#f44336" font-weight="bold" text-anchor="middle">Wavelength</text>
+                        
+                        <!-- Wave height -->
+                        <line x1="650" y1="100" x2="650" y2="200" stroke="#4caf50" stroke-width="2"/>
+                        <line x1="645" y1="100" x2="655" y2="100" stroke="#4caf50" stroke-width="2"/>
+                        <line x1="645" y1="200" x2="655" y2="200" stroke="#4caf50" stroke-width="2"/>
+                        <text x="720" y="150" font-size="16" fill="#4caf50" font-weight="bold">Wave Height</text>
+                        
+                        <!-- Crest -->
+                        <circle cx="250" cy="100" r="8" fill="#ff9800"/>
+                        <text x="250" y="85" font-size="16" fill="#ff9800" font-weight="bold" text-anchor="middle">Crest</text>
+                        
+                        <!-- Trough -->
+                        <circle cx="450" cy="200" r="8" fill="#9c27b0"/>
+                        <text x="450" y="225" font-size="16" fill="#9c27b0" font-weight="bold" text-anchor="middle">Trough</text>
+                        
+                        <!-- Wind effect -->
+                        <g id="wind">
+                            <path d="M 100 50 L 200 50" stroke="#666" stroke-width="2" marker-end="url(#arrowwind)"/>
+                            <path d="M 150 60 L 250 60" stroke="#666" stroke-width="2" marker-end="url(#arrowwind)"/>
+                            <path d="M 200 70 L 300 70" stroke="#666" stroke-width="2" marker-end="url(#arrowwind)"/>
+                            <text x="250" y="45" font-size="14" fill="#666" font-weight="bold" text-anchor="middle">WIND</text>
+                        </g>
+                        
+                        <!-- Water particles motion -->
+                        <circle cx="150" cy="150" r="5" fill="#0077be" opacity="0.5">
+                            <animateTransform attributeName="transform" type="rotate" 
+                                from="0 150 150" to="360 150 150" dur="3s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="350" cy="150" r="5" fill="#0077be" opacity="0.5">
+                            <animateTransform attributeName="transform" type="rotate" 
+                                from="0 350 150" to="360 350 150" dur="3s" repeatCount="indefinite"/>
+                        </circle>
+                        
+                        <!-- Ocean floor -->
+                        <rect x="0" y="320" width="800" height="80" fill="#8b7355"/>
+                        <text x="400" y="360" font-size="18" fill="white" font-weight="bold" text-anchor="middle">Ocean Floor</text>
+                        
+                        <defs>
+                            <marker id="arrowwind" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <path d="M 0 0 L 0 6 L 9 3 Z" fill="#666"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+
+                <div class="wave-simulator" id="waveSimulator">
+                    <canvas id="waveCanvas" width="800" height="200"></canvas>
+                </div>
+                
+                <div class="controls">
+                    <button class="control-btn" onclick="setWaveType('calm')">😌 Calm</button>
+                    <button class="control-btn" onclick="setWaveType('moderate')">🌊 Moderate</button>
+                    <button class="control-btn" onclick="setWaveType('rough')">⚡ Rough</button>
+                    <button class="control-btn" onclick="setWaveType('storm')">🌪️ Storm</button>
+                </div>
+
+                <div class="experiment-description">
+                    <p><strong>Waves</strong> are created primarily by wind blowing across the ocean's surface. The energy from wind transfers to the water, creating ripples that grow into waves. Wave size depends on wind speed, duration, and fetch (distance over which wind blows).</p>
+                </div>
+
+                <div class="materials">
+                    <h3 class="section-title">Materials Needed:</h3>
+                    <ul>
+                        <li>Large rectangular container or aquarium</li>
+                        <li>Water</li>
+                        <li>Wooden ruler or stiff cardboard</li>
+                        <li>Small cork or floating object</li>
+                        <li>Food coloring (optional)</li>
+                        <li>Fan or handheld blower (optional)</li>
+                    </ul>
+                </div>
+
+                <div class="procedure">
+                    <h3 class="section-title">Procedure:</h3>
+                    <ol>
+                        <li>Fill the container about 3/4 full with water</li>
+                        <li>Let the water settle until completely still</li>
+                        <li>Place the cork on the water surface</li>
+                        <li>Use the ruler to create waves by moving it back and forth at one end</li>
+                        <li>Observe how the cork moves in a circular motion, not forward</li>
+                        <li>Try different speeds and strengths to create different wave sizes</li>
+                        <li>Use a fan to create wind-driven waves across the surface</li>
+                        <li>Notice how faster movement creates bigger waves</li>
+                        <li>Observe wave reflection when they hit the container walls</li>
+                    </ol>
+                </div>
+
+                <div class="info-box">
+                    <strong>Wave Energy:</strong> While waves move across the ocean, the water itself moves in circular motions. This is why the cork bobs up and down in circles rather than moving forward with the wave. Energy travels through the water, but the water stays mostly in place!
+                </div>
+            </div>
+        </div>
+
+        <!-- Ocean Currents -->
+        <div id="currents" class="experiment-section">
+            <div class="experiment-card">
+                <h2 class="experiment-title">🔄 Ocean Currents</h2>
+                
+                <div class="media-container">
+                    <svg width="100%" height="400" viewBox="0 0 800 400">
+                        <!-- Ocean background -->
+                        <rect width="800" height="400" fill="#4dd0e1"/>
+                        
+                        <!-- Title -->
+                        <text x="400" y="30" font-size="24" fill="#fff" font-weight="bold" text-anchor="middle">Global Ocean Currents</text>
+                        
+                        <!-- Warm currents (red) -->
+                        <path d="M 100 200 Q 200 150 300 200" stroke="#ff5722" stroke-width="6" fill="none" marker-end="url(#arrowwarm)"/>
+                        <path d="M 400 150 Q 500 120 600 150" stroke="#ff5722" stroke-width="6" fill="none" marker-end="url(#arrowwarm)"/>
+                        <text x="200" y="180" font-size="14" fill="#fff" font-weight="bold">Warm Current</text>
+                        
+                        <!-- Cold currents (blue) -->
+                        <path d="M 300 280 Q 200 320 100 280" stroke="#2196f3" stroke-width="6" fill="none" marker-end="url(#arrowcold)"/>
+                        <path d="M 600 250 Q 500 280 400 250" stroke="#2196f3" stroke-width="6" fill="none" marker-end="url(#arrowcold)"/>
+                        <text x="200" y="310" font-size="14" fill="#fff" font-weight="bold">Cold Current</text>
+                        
+                        <!-- Circular current (gyre) -->
+                        <circle cx="650" cy="280" r="80" stroke="#ffd700" stroke-width="4" fill="none" stroke-dasharray="10,5"/>
+                        <text x="650" y="380" font-size="14" fill="#fff" font-weight="bold" text-anchor="middle">Ocean Gyre</text>
+                        
+                        <!-- Sun heating -->
+                        <circle cx="700" cy="50" r="30" fill="#ffd700"/>
+                        <line x1="680" y1="30" x2="670" y2="20" stroke="#ffd700" stroke-width="2"/>
+                        <line x1="720" y1="30" x2="730" y2="20" stroke="#ffd700" stroke-width="2"/>
+                        <line x1="720" y1="70" x2="730" y2="80" stroke="#ffd700" stroke-width="2"/>
+                        
+                        <!-- Temperature zones -->
+                        <text x="50" y="100" font-size="16" fill="#fff" font-weight="bold">Equator (Warm)</text>
+                        <text x="50" y="350" font-size="16" fill="#fff" font-weight="bold">Poles (Cold)</text>
+                        
+                        <defs>
+                            <marker id="arrowwarm" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <path d="M 0 0 L 0 6 L 9 3 Z" fill="#ff5722"/>
+                            </marker>
+                            <marker id="arrowcold" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <path d="M 0 0 L 0 6 L 9 3 Z" fill="#2196f3"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+
+                <div class="experiment-description">
+                    <p><strong>Ocean currents</strong> are continuous movements of ocean water driven by wind, temperature differences, salinity, and Earth's rotation. They act like a global conveyor belt, distributing heat around the planet and affecting climate worldwide.</p>
+                </div>
+
+                <div class="materials">
+                    <h3 class="section-title">Materials Needed:</h3>
+                    <ul>
+                        <li>Clear rectangular container</li>
+                        <li>Cold water with ice cubes</li>
+                        <li>Hot water</li>
+                        <li>Blue and red food coloring</li>
+                        <li>Two small cups</li>
+                        <li>Dropper or small spoon</li>
+                    </ul>
+                </div>
+
+                <div class="procedure">
+                    <h3 class="section-title">Procedure:</h3>
+                    <ol>
+                        <li>Fill the container halfway with room temperature water</li>
+                        <li>Add blue food coloring to ice water in one cup (cold current)</li>
+                        <li>Add red food coloring to hot water in another cup (warm current)</li>
+                        <li>Gently pour some blue ice water at one end of the container</li>
+                        <li>Observe how cold water sinks and moves along the bottom</li>
+                        <li>Carefully add red hot water at the opposite end</li>
+                        <li>Watch how warm water floats on top and spreads</li>
+                        <li>Observe the circulation pattern that forms</li>
+                        <li>This demonstrates thermohaline circulation (density-driven flow)</li>
+                    </ol>
+                </div>
+
+                <div class="info-box">
+                    <strong>The Great Ocean Conveyor Belt:</strong> This global system of currents takes about 1,000 years to complete one full cycle! It plays a crucial role in regulating Earth's climate by transferring heat from the equator to the poles.
+                </div>
+            </div>
+        </div>
+
+        <!-- Ocean Zones -->
+        <div id="ocean-zones" class="experiment-section">
+            <div class="experiment-card">
+                <h2 class="experiment-title">🐠 Ocean Depth Zones</h2>
+                
+                <div class="media-container">
+                    <svg width="100%" height="600" viewBox="0 0 800 600">
+                        <!-- Sunlight Zone -->
+                        <rect x="0" y="0" width="800" height="120" fill="#42a5f5"/>
+                        <text x="50" y="40" font-size="18" fill="white" font-weight="bold">Sunlight Zone</text>
+                        <text x="50" y="65" font-size="14" fill="white">0-200m | Warm, bright, most life</text>
+                        <text x="650" y="60" font-size="40">🐠🐟🌊</text>
+                        
+                        <!-- Twilight Zone -->
+                        <rect x="0" y="120" width="800" height="120" fill="#1976d2"/>
+                        <text x="50" y="160" font-size="18" fill="white" font-weight="bold">Twilight Zone</text>
+                        <text x="50" y="185" font-size="14" fill="white">200-1000m | Dim light, cooler</text>
+                        <text x="650" y="180" font-size="40">🦑🐙</text>
+                        
+                        <!-- Midnight Zone -->
+                        <rect x="0" y="240" width="800" height="120" fill="#0d47a1"/>
+                        <text x="50" y="280" font-size="18" fill="white" font-weight="bold">Midnight Zone</text>
+                        <text x="50" y="305" font-size="14" fill="white">1000-4000m | No light, cold, high pressure</text>
+                        <text x="650" y="300" font-size="40">🦈🐡</text>
+                        
+                        <!-- Abyssal Zone -->
+                        <rect x="0" y="360" width="800" height="120" fill="#01579b"/>
+                        <text x="50" y="400" font-size="18" fill="white" font-weight="bold">Abyssal Zone</text>
+                        <text x="50" y="425" font-size="14" fill="white">4000-6000m | Near freezing, extreme pressure</text>
+                        <text x="650" y="420" font-size="40">🦐🦀</text>
+                        
+                        <!-- Hadal Zone -->
+                        <rect x="0" y="480" width="800" height="120" fill="#002171"/>
+                        <text x="50" y="520" font-size="18" fill="white" font-weight="bold">Hadal Zone</text>
+                        <text x="50" y="545" font-size="14" fill="white">6000-11000m | Deepest trenches</text>
+                        <text x="650" y="540" font-size="40">🦠</text>
+                        
+                        <!-- Depth markers -->
+                        <line x1="750" y1="0" x2="750" y2="600" stroke="white" stroke-width="3"/>
+                        <text x="770" y="60" font-size="12" fill="white">0m</text>
+                        <text x="770" y="180" font-size="12" fill="white">200m</text>
+                        <text x="770" y="300" font-size="12" fill="white">1000m</text>
+                        <text x="770" y="420" font-size="12" fill="white">4000m</text>
+                        <text x="770" y="540" font-size="12" fill="white">6000m</text>
+                    </svg>
+                </div>
+
+                <div class="depth-zone">
+                    <div class="zone sunlight-zone">
+                        <div>🌞 SUNLIGHT</div>
+                        <div>0-200m</div>
+                    </div>
+                    <div class="zone twilight-zone">
+                        <div>🌅 TWILIGHT</div>
+                        <div>200-1000m</div>
+                    </div>
+                    <div class="zone midnight-zone">
+                        <div>🌑 MIDNIGHT</div>
+                        <div>1000-4000m</div>
+                    </div>
+                    <div class="zone abyssal-zone">
+                        <div>🌊 ABYSSAL</div>
+                        <div>4000-6000m</div>
+                    </div>
+                    <div class="zone hadal-zone">
+                        <div>🕳️ HADAL</div>
+                        <div>6000-11000m</div>
+                    </div>
+                </div>
+
+                <div class="experiment-description">
+                    <p>The ocean is divided into five main depth zones, each with unique characteristics. Light penetration, temperature, and pressure change dramatically with depth, creating distinct habitats for marine life.</p>
+                </div>
+
+                <div class="info-box">
+                    <strong>Amazing Facts:</strong>
+                    <ul style="margin-top: 10px; margin-left: 20px;">
+                        <li>90% of ocean life lives in the sunlight zone</li>
+                        <li>The deepest point is Mariana Trench: 10,994 meters!</li>
+                        <li>Pressure at ocean bottom is over 1,000 times surface pressure</li>
+                        <li>Some deep-sea creatures create their own light (bioluminescence)</li>
+                        <li>We've explored less than 5% of the ocean depths</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Ocean Demo -->
+        <div id="interactive" class="experiment-section">
+            <div class="experiment-card">
+                <h2 class="experiment-title">🎮 Interactive Ocean Simulator</h2>
+                
+                <div class="interactive-demo" id="oceanDemo">
+                    <div class="ocean-surface"></div>
+                    <div class="ocean-floor"></div>
+                    <div class="tide-indicator" id="tideStatus">
+                        <div>🌊 Tide Level</div>
+                        <div id="tideLevel" style="font-size: 1.5em; color: #0077be;">Normal</div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="control-btn" onclick="setTide('low')">🏖️ Low Tide</button>
+                    <button class="control-btn" onclick="setTide('normal')">🌊 Normal</button>
+                    <button class="control-btn" onclick="setTide('high')">🌊🌊 High Tide</button>
+                    <button class="control-btn" onclick="addFish()">🐟 Add Fish</button>
+                    <button class="control-btn" onclick="addBoat()">⛵ Add Boat</button>
+                    <button class="control-btn" onclick="clearOcean()">🧹 Clear</button>
+                </div>
+
+                <div class="experiment-description">
+                    <p>Explore the dynamic ocean environment! Add marine life, observe tidal changes, and see how different elements interact in the ocean ecosystem.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Section -->
+        <div id="quiz" class="experiment-section">
+            <div class="experiment-card">
+                <h2 class="experiment-title">🧠 Oceanography Quiz</h2>
+                <p class="experiment-description">Test your knowledge about oceans, salinity, tides, and waves! Answer all questions and submit to see your score.</p>
+                
+                <div class="quiz-section" id="quizContainer">
+                    <!-- Questions will be generated by JavaScript -->
+                </div>
+                
+                <button class="submit-btn" onclick="submitQuiz()">Submit Quiz</button>
+                <div id="scoreDisplay" class="score-display" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Quiz Questions (30 total)
+        const quizQuestions = [
+            {
+                question: "What is the average salinity of ocean water?",
+                options: ["35 parts per thousand", "50 parts per thousand", "10 parts per thousand", "100 parts per thousand"],
+                correct: 0
+            },
+            {
+                question: "What primarily causes ocean tides?",
+                options: ["Wind", "Moon's gravitational pull", "Earth's rotation only", "Ocean currents"],
+                correct: 1
+            },
+            {
+                question: "What creates ocean waves?",
+                options: ["Earthquakes only", "Wind blowing across water", "Fish swimming", "Temperature changes"],
+                correct: 1
+            },
+            {
+                question: "Which ocean zone receives sunlight?",
+                options: ["Abyssal zone", "Hadal zone", "Sunlight zone", "Midnight zone"],
+                correct: 2
+            },
+            {
+                question: "What is the highest point of a wave called?",
+                options: ["Trough", "Crest", "Wavelength", "Peak"],
+                correct: 1
+            },
+            {
+                question: "What percentage of Earth's surface is covered by oceans?",
+                options: ["50%", "60%", "71%", "85%"],
+                correct: 2
+            },
+            {
+                question: "What is the deepest part of the ocean called?",
+                options: ["Mariana Trench", "Atlantic Trench", "Pacific Deep", "Ocean Valley"],
+                correct: 0
+            },
+            {
+                question: "What are spring tides?",
+                options: ["Tides in spring only", "Highest high and lowest low tides", "Average tides", "Summer tides"],
+                correct: 1
+            },
+            {
+                question: "What causes ocean currents?",
+                options: ["Only wind", "Only temperature", "Wind, temperature, salinity, and Earth's rotation", "Only waves"],
+                correct: 2
+            },
+            {
+                question: "What is a tsunami?",
+                options: ["Very large wind wave", "Wave caused by underwater earthquake", "Tidal wave", "Storm surge"],
+                correct: 1
+            },
+            {
+                question: "Which is the largest ocean?",
+                options: ["Atlantic", "Pacific", "Indian", "Arctic"],
+                correct: 1
+            },
+            {
+                question: "What is the lowest point of a wave called?",
+                options: ["Crest", "Valley", "Trough", "Bottom"],
+                correct: 2
+            },
+            {
+                question: "How often do most places experience high tide?",
+                options: ["Once a day", "Twice a day", "Three times a day", "Once a week"],
+                correct: 1
+            },
+            {
+                question: "What is salinity?",
+                options: ["Temperature of water", "Amount of dissolved salts", "Water depth", "Wave height"],
+                correct: 1
+            },
+            {
+                question: "What causes water to be more dense?",
+                options: ["Higher temperature", "Lower salinity", "Higher salinity", "More oxygen"],
+                correct: 2
+            },
+            {
+                question: "What is the thermocline?",
+                options: ["Ocean surface", "Layer where temperature changes rapidly", "Ocean floor", "Wave pattern"],
+                correct: 1
+            },
+            {
+                question: "What is bioluminescence?",
+                options: ["Sunlight reflection", "Light produced by living organisms", "Moon glow", "Artificial light"],
+                correct: 1
+            },
+            {
+                question: "What is an ocean gyre?",
+                options: ["Large whirlpool", "Circular ocean current system", "Type of wave", "Deep trench"],
+                correct: 1
+            },
+            {
+                question: "What is upwelling?",
+                options: ["Waves getting bigger", "Deep cold water rising to surface", "High tide", "Storm formation"],
+                correct: 1
+            },
+            {
+                question: "What is the continental shelf?",
+                options: ["Deep ocean floor", "Underwater land extending from continent", "Ocean surface", "Type of current"],
+                correct: 1
+            },
+            {
+                question: "What are neap tides?",
+                options: ["Highest tides", "Lowest tidal range", "Spring tides", "Storm tides"],
+                correct: 1
+            },
+            {
+                question: "At what depth does the midnight zone begin?",
+                options: ["100 meters", "500 meters", "1000 meters", "200 meters"],
+                correct: 2
+            },
+            {
+                question: "What is the Coriolis effect?",
+                options: ["Wave formation", "Earth's rotation affecting currents", "Tidal pull", "Temperature change"],
+                correct: 1
+            },
+            {
+                question: "What is a rip current?",
+                options: ["Strong current pulling away from shore", "Wave hitting shore", "Circular current", "Tide coming in"],
+                correct: 0
+            },
+            {
+                question: "What percentage of ocean is the deep sea (below 200m)?",
+                options: ["50%", "75%", "90%", "95%"],
+                correct: 3
+            },
+            {
+                question: "What is the halocline?",
+                options: ["Temperature layer", "Salinity change layer", "Light penetration depth", "Oxygen level"],
+                correct: 1
+            },
+            {
+                question: "What drives the global ocean conveyor belt?",
+                options: ["Wind only", "Temperature and salinity differences", "Moon's gravity", "Waves"],
+                correct: 1
+            },
+            {
+                question: "What is fetch in wave formation?",
+                options: ["Wave height", "Distance wind blows over water", "Water temperature", "Ocean depth"],
+                correct: 1
+            },
+            {
+                question: "What causes the ocean to be salty?",
+                options: ["Marine life", "Dissolved minerals from rocks and land", "Evaporation only", "Rain"],
+                correct: 1
+            },
+            {
+                question: "What is an atoll?",
+                options: ["Type of wave", "Ring-shaped coral reef", "Ocean current", "Deep trench"],
+                correct: 1
+            }
+        ];
+
+        let selectedAnswers = {};
+        let fishCount = 0;
+        let boatCount = 0;
+
+        // Generate quiz questions
+        function generateQuiz() {
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = '';
+            
+            // Randomly select 25 questions from 30
+            const selectedQuestions = [...quizQuestions].sort(() => 0.5 - Math.random()).slice(0, 25);
+            
+            selectedQuestions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.innerHTML = `
+                    <div class="question-text">${index + 1}. ${q.question}</div>
+                    <div class="options">
+                        ${q.options.map((opt, i) => `
+                            <div class="option" onclick="selectOption(${index}, ${i}, ${q.correct})" id="q${index}opt${i}">
+                                ${opt}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(questionDiv);
+            });
+        }
+
+        function selectOption(questionIndex, optionIndex, correctIndex) {
+            // Remove previous selection
+            for (let i = 0; i < 4; i++) {
+                const opt = document.getElementById(`q${questionIndex}opt${i}`);
+                if (opt) {
+                    opt.classList.remove('selected');
+                }
+            }
+            
+            // Add selection to clicked option
+            const selected = document.getElementById(`q${questionIndex}opt${optionIndex}`);
+            if (selected) {
+                selected.classList.add('selected');
+                selectedAnswers[questionIndex] = {selected: optionIndex, correct: correctIndex};
+            }
+        }
+
+        function submitQuiz() {
+            let correct = 0;
+            let total = Object.keys(selectedAnswers).length;
+            
+            if (total === 0) {
+                alert('Please answer at least one question before submitting!');
+                return;
+            }
+            
+            // Show correct/incorrect answers
+            Object.keys(selectedAnswers).forEach(qIndex => {
+                const answer = selectedAnswers[qIndex];
+                const selectedOpt = document.getElementById(`q${qIndex}opt${answer.selected}`);
+                const correctOpt = document.getElementById(`q${qIndex}opt${answer.correct}`);
+                
+                if (answer.selected === answer.correct) {
+                    correct++;
+                    if (selectedOpt) selectedOpt.classList.add('correct');
+                } else {
+                    if (selectedOpt) selectedOpt.classList.add('incorrect');
+                    if (correctOpt) correctOpt.classList.add('correct');
+                }
+            });
+            
+            // Display score
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const percentage = ((correct / total) * 100).toFixed(1);
+            scoreDisplay.innerHTML = `
+                You scored ${correct} out of ${total} questions (${percentage}%)
+                <br>
+                ${percentage >= 80 ? '🌟 Excellent! You know your oceans!' : percentage >= 60 ? '🐠 Good job! Keep learning!' : '📚 Keep studying oceanography!'}
+            `;
+            scoreDisplay.style.display = 'block';
+            
+            // Scroll to score
+            scoreDisplay.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Salinity meter
+        function updateSalinity(value) {
+            document.getElementById('salinityValue').textContent = value;
+            const indicator = document.getElementById('salinityIndicator');
+            const percentage = (value / 70) * 100;
+            indicator.style.left = `calc(${percentage}% - 2px)`;
+            
+            const desc = document.getElementById('salinityDescription');
+            if (value < 10) {
+                desc.textContent = '💧 Fresh water - Rivers and lakes';
+            } else if (value < 30) {
+                desc.textContent = '🌊 Brackish water - Estuaries and river mouths';
+            } else if (value <= 40) {
+                desc.textContent = '🌊 Ocean water - Normal salinity range';
+            } else if (value <= 50) {
+                desc.textContent = '🧂 High salinity - Enclosed seas like the Red Sea';
+            } else {
+                desc.textContent = '🧂🧂 Extreme salinity - Like the Dead Sea!';
+            }
+        }
+
+        // Wave simulator
+        let waveAmplitude = 20;
+        let waveFrequency = 0.02;
+        let waveOffset = 0;
+
+        function animateWaves() {
+            const canvas = document.getElementById('waveCanvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = 200;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw waves
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height / 2);
+            
+            for (let x = 0; x < canvas.width; x++) {
+                const y = canvas.height / 2 + Math.sin(x * waveFrequency + waveOffset) * waveAmplitude;
+                ctx.lineTo(x, y);
+            }
+            
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.lineTo(0, canvas.height);
+            ctx.closePath();
+            
+            ctx.fillStyle = '#0077be';
+            ctx.fill();
+            
+            waveOffset += 0.05;
+            requestAnimationFrame(animateWaves);
+        }
+
+        function setWaveType(type) {
+            switch(type) {
+                case 'calm':
+                    waveAmplitude = 10;
+                    waveFrequency = 0.01;
+                    break;
+                case 'moderate':
+                    waveAmplitude = 20;
+                    waveFrequency = 0.02;
+                    break;
+                case 'rough':
+                    waveAmplitude = 35;
+                    waveFrequency = 0.03;
+                    break;
+                case 'storm':
+                    waveAmplitude = 50;
+                    waveFrequency = 0.04;
+                    break;
+            }
+        }
+
+        // Interactive ocean demo
+        function setTide(level) {
+            const demo = document.getElementById('oceanDemo');
+            const tideLevel = document.getElementById('tideLevel');
+            
+            switch(level) {
+                case 'low':
+                    demo.style.background = 'linear-gradient(to bottom, #87ceeb 60%, #1e3a8a 100%)';
+                    tideLevel.textContent = 'Low Tide';
+                    tideLevel.style.color = '#ff9800';
+                    break;
+                case 'normal':
+                    demo.style.background = 'linear-gradient(to bottom, #87ceeb 40%, #1e3a8a 100%)';
+                    tideLevel.textContent = 'Normal';
+                    tideLevel.style.color = '#0077be';
+                    break;
+                case 'high':
+                    demo.style.background = 'linear-gradient(to bottom, #87ceeb 20%, #1e3a8a 100%)';
+                    tideLevel.textContent = 'High Tide';
+                    tideLevel.style.color = '#2196f3';
+                    break;
+            }
+        }
+
+        function addFish() {
+            const demo = document.getElementById('oceanDemo');
+            const fish = document.createElement('div');
+            fish.className = 'fish';
+            fish.textContent = '🐠';
+            fish.style.top = `${Math.random() * 250 + 50}px`;
+            fish.style.animationDuration = `${10 + Math.random() * 10}s`;
+            fish.style.animationDelay = `${Math.random() * 2}s`;
+            demo.appendChild(fish);
+            fishCount++;
+            
+            setTimeout(() => {
+                fish.remove();
+                fishCount--;
+            }, 15000);
+        }
+
+        function addBoat() {
+            const demo = document.getElementById('oceanDemo');
+            const boat = document.createElement('div');
+            boat.style.position = 'absolute';
+            boat.style.fontSize = '3em';
+            boat.textContent = '⛵';
+            boat.style.top = '20px';
+            boat.style.left = '-50px';
+            boat.style.animation = 'swim 12s linear';
+            demo.appendChild(boat);
+            boatCount++;
+            
+            setTimeout(() => {
+                boat.remove();
+                boatCount--;
+            }, 12000);
+        }
+
+        function clearOcean() {
+            const demo = document.getElementById('oceanDemo');
+            const fish = demo.querySelectorAll('.fish');
+            fish.forEach(f => f.remove());
+            const boats = demo.querySelectorAll('[style*="⛵"]');
+            boats.forEach(b => b.remove());
+            fishCount = 0;
+            boatCount = 0;
+        }
+
+        // Tab switching
+        function showTab(tabName) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.experiment-section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Remove active class from all buttons
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        // Initialize
+        window.onload = function() {
+            generateQuiz();
+            updateSalinity(35);
+            animateWaves();
+            setTide('normal');
+        };
+    </script>
+</body>
+</html>

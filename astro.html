@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astronomy Lab - Space Explorer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #0a0e27;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .space-bg {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            z-index: -1;
+        }
+
+        .shooting-star {
+            position: fixed;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px 2px white;
+            animation: shoot 3s linear infinite;
+        }
+
+        @keyframes shoot {
+            0% {
+                transform: translate(0, 0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-300px, 300px);
+                opacity: 0;
+            }
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        h1 {
+            font-size: 3em;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4);
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(240, 147, 251, 0.6);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .content-section {
+            display: none;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .planet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .planet-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .planet-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 40px rgba(79, 172, 254, 0.4);
+        }
+
+        .planet-visual {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            position: relative;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .planet-name {
+            font-size: 1.5em;
+            text-align: center;
+            margin-bottom: 15px;
+            color: #4facfe;
+        }
+
+        .planet-details {
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .planet-details p {
+            margin: 8px 0;
+        }
+
+        .video-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .video-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .video-item h3 {
+            color: #f5576c;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .star-facts {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .star-facts h2 {
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .fact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .fact-card {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(255,215,0,0.3);
+        }
+
+        .fact-card h4 {
+            color: #4facfe;
+            margin-bottom: 10px;
+        }
+
+        .quiz-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .quiz-header h2 {
+            color: #f5576c;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .question-card {
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.1) 0%, rgba(0, 242, 254, 0.1) 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border: 2px solid rgba(79, 172, 254, 0.3);
+        }
+
+        .question-card h3 {
+            color: #4facfe;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .answer-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .answer-option {
+            background: rgba(255,255,255,0.05);
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 2px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+        }
+
+        .answer-option:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: #4facfe;
+            transform: translateX(5px);
+        }
+
+        .answer-option.selected {
+            background: rgba(79, 172, 254, 0.3);
+            border-color: #4facfe;
+        }
+
+        .answer-option.correct {
+            background: rgba(0, 255, 0, 0.2);
+            border-color: #00ff00;
+        }
+
+        .answer-option.wrong {
+            background: rgba(255, 0, 0, 0.2);
+            border-color: #ff0000;
+        }
+
+        .submit-quiz {
+            display: block;
+            margin: 30px auto;
+            padding: 18px 50px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(245, 87, 108, 0.4);
+            transition: all 0.3s;
+        }
+
+        .submit-quiz:hover {
+            transform: scale(1.05);
+            box-shadow: 0 7px 30px rgba(245, 87, 108, 0.6);
+        }
+
+        .quiz-result {
+            background: linear-gradient(135deg, rgba(240, 147, 251, 0.3) 0%, rgba(245, 87, 108, 0.3) 100%);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin-top: 30px;
+            display: none;
+            border: 3px solid rgba(240, 147, 251, 0.5);
+        }
+
+        .quiz-result.show {
+            display: block;
+        }
+
+        .quiz-result h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 30px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            font-weight: bold;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.5);
+        }
+
+        .retry-btn {
+            margin-top: 20px;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 1.1em;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+            
+            .planet-grid,
+            .video-gallery {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="space-bg" id="spaceBg"></div>
+
+    <header>
+        <h1>🌌 Astronomy Lab</h1>
+        <p class="tagline">Journey Through Space & Time</p>
+    </header>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('planets')">🪐 Planets</button>
+            <button class="tab-btn" onclick="switchTab('stars')">⭐ Stars</button>
+            <button class="tab-btn" onclick="switchTab('videos')">🎥 Videos</button>
+            <button class="tab-btn" onclick="switchTab('quiz')">📝 Quiz</button>
+        </div>
+
+<!-- Solar System Section 
+        <div id="solar" class="section active">
+            <h2>Our Solar System</h2>
+            <div class="solar-system">
+                <div class="sun"></div>
+                <div class="orbit" style="width: 120px; height: 120px; animation-duration: 3s;">
+                    <div class="planet" style="width: 12px; height: 12px; background: #8b7355; top: -6px; left: 54px;" onclick="showPlanetInfo('mercury')"></div>
+                </div>
+                <div class="orbit" style="width: 160px; height: 160px; animation-duration: 6s;">
+                    <div class="planet" style="width: 16px; height: 16px; background: #ffa500; top: -8px; left: 72px;" onclick="showPlanetInfo('venus')"></div>
+                </div>
+                <div class="orbit" style="width: 200px; height: 200px; animation-duration: 9s;">
+                    <div class="planet" style="width: 18px; height: 18px; background: #4169e1; top: -9px; left: 91px;" onclick="showPlanetInfo('earth')"></div>
+                </div>
+                <div class="orbit" style="width: 240px; height: 240px; animation-duration: 12s;">
+                    <div class="planet" style="width: 14px; height: 14px; background: #cd5c5c; top: -7px; left: 113px;" onclick="showPlanetInfo('mars')"></div>
+                </div>
+                <div class="orbit" style="width: 300px; height: 300px; animation-duration: 18s;">
+                    <div class="planet" style="width: 35px; height: 35px; background: #daa520; top: -17.5px; left: 132.5px;" onclick="showPlanetInfo('jupiter')"></div>
+                </div>
+            </div>
+
+            <div id="planetInfo" class="planet-info"></div>
+
+        </div>
+    -->
+
+        <!-- Planets Section -->
+        <div id="planets" class="content-section active">
+            <h2 style="text-align: center; color: #4facfe; font-size: 2.5em; margin-bottom: 20px;">Explore Our Solar System</h2>
+            <div class="planet-grid" id="planetGrid"></div>
+        </div>
+
+        <!-- Stars Section -->
+        <div id="stars" class="content-section">
+            <div class="star-facts">
+                <h2>✨ Fascinating Star Facts</h2>
+                <p style="font-size: 1.1em; line-height: 1.8; margin-bottom: 20px;">
+                    Stars are massive celestial bodies made primarily of hydrogen and helium that produce light and heat through nuclear fusion. They are the building blocks of galaxies and the source of most elements in the universe.
+                </p>
+                <div class="fact-grid">
+                    <div class="fact-card">
+                        <h4>🌡️ Temperature</h4>
+                        <p>Stars range from 2,500°C (red dwarfs) to over 40,000°C (blue giants)</p>
+                    </div>
+                    <div class="fact-card">
+                        <h4>⏳ Lifespan</h4>
+                        <p>Small stars live trillions of years, massive stars only millions</p>
+                    </div>
+                    <div class="fact-card">
+                        <h4>💫 Birth</h4>
+                        <p>Stars form in giant clouds of gas and dust called nebulae</p>
+                    </div>
+                    <div class="fact-card">
+                        <h4>☀️ Our Sun</h4>
+                        <p>A medium-sized yellow dwarf star, 4.6 billion years old</p>
+                    </div>
+                    <div class="fact-card">
+                        <h4>🔴 Red Giants</h4>
+                        <p>Dying stars that expand and cool down</p>
+                    </div>
+                    <div class="fact-card">
+                        <h4>💥 Supernovae</h4>
+                        <p>Massive stellar explosions that create heavy elements</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Videos Section -->
+        <div id="videos" class="content-section">
+            <h2 style="text-align: center; color: #f5576c; font-size: 2.5em; margin-bottom: 30px;">Space Exploration Videos</h2>
+            <div class="video-gallery">
+                <div class="video-item">
+                    <h3>🌍 Earth from Space</h3>
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/HCDVN7DCzYE" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <div class="video-item">
+                    <h3>🪐 Journey to Jupiter</h3>
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/PtkqwslbLY8" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <div class="video-item">
+                    <h3>⭐ Life Cycle of Stars</h3>
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/PM9CQDlQI0A" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <div class="video-item">
+                    <h3>🌌 Universe Mysteries</h3>
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/udAL48P5NJU" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Section -->
+        <div id="quiz" class="content-section">
+            <div class="quiz-section">
+                <div class="quiz-header">
+                    <h2>🚀 Test Your Knowledge</h2>
+                    <p style="font-size: 1.1em; opacity: 0.9;">Answer all 28 questions and see how much you know about space!</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+                <div id="quizQuestions"></div>
+                <button class="submit-quiz" onclick="submitQuiz()">Submit Answers</button>
+                <div class="quiz-result" id="quizResult"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create shooting stars
+        function createShootingStars() {
+            const spaceBg = document.getElementById('spaceBg');
+            setInterval(() => {
+                const star = document.createElement('div');
+                star.className = 'shooting-star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 50 + '%';
+                spaceBg.appendChild(star);
+                setTimeout(() => star.remove(), 3000);
+            }, 2000);
+        }
+        createShootingStars();
+
+        // Planet data
+        const planets = [
+            {
+                name: "Mercury",
+                color: "linear-gradient(135deg, #8b7355 0%, #a0826d 100%)",
+                diameter: "4,879 km",
+                distance: "57.9 million km from Sun",
+                moons: "0",
+                fact: "Mercury has extreme temperature swings - from -173°C at night to 427°C during the day!"
+            },
+            {
+                name: "Venus",
+                color: "linear-gradient(135deg, #ffa500 0%, #ffcc66 100%)",
+                diameter: "12,104 km",
+                distance: "108.2 million km from Sun",
+                moons: "0",
+                fact: "Venus rotates backwards and a day on Venus is longer than its year!"
+            },
+            {
+                name: "Earth",
+                color: "linear-gradient(135deg, #4169e1 0%, #87ceeb 100%)",
+                diameter: "12,742 km",
+                distance: "149.6 million km from Sun",
+                moons: "1",
+                fact: "Earth is the only planet not named after a god and has liquid water on its surface!"
+            },
+            {
+                name: "Mars",
+                color: "linear-gradient(135deg, #cd5c5c 0%, #ff6347 100%)",
+                diameter: "6,779 km",
+                distance: "227.9 million km from Sun",
+                moons: "2",
+                fact: "Mars has the tallest volcano and deepest canyon in the solar system!"
+            },
+            {
+                name: "Jupiter",
+                color: "linear-gradient(135deg, #daa520 0%, #f4a460 100%)",
+                diameter: "139,820 km",
+                distance: "778.5 million km from Sun",
+                moons: "95",
+                fact: "Jupiter's Great Red Spot is a storm that has raged for over 300 years!"
+            },
+            {
+                name: "Saturn",
+                color: "linear-gradient(135deg, #f4a460 0%, #ffd700 100%)",
+                diameter: "116,460 km",
+                distance: "1.4 billion km from Sun",
+                moons: "146",
+                fact: "Saturn's rings are made of billions of ice particles, some as small as dust!"
+            },
+            {
+                name: "Uranus",
+                color: "linear-gradient(135deg, #4682b4 0%, #87ceeb 100%)",
+                diameter: "50,724 km",
+                distance: "2.9 billion km from Sun",
+                moons: "27",
+                fact: "Uranus rotates on its side, possibly due to a massive collision long ago!"
+            },
+            {
+                name: "Neptune",
+                color: "linear-gradient(135deg, #000080 0%, #4169e1 100%)",
+                diameter: "49,244 km",
+                distance: "4.5 billion km from Sun",
+                moons: "14",
+                fact: "Neptune has the fastest winds in the solar system, reaching 2,000 km/h!"
+            }
+        ];
+
+        // Display planets
+        function displayPlanets() {
+            const grid = document.getElementById('planetGrid');
+            planets.forEach(planet => {
+                const card = document.createElement('div');
+                card.className = 'planet-card';
+                card.innerHTML = `
+                    <div class="planet-visual" style="background: ${planet.color}; box-shadow: 0 0 30px ${planet.color.match(/#[0-9a-f]{6}/i)[0]}"></div>
+                    <h3 class="planet-name">${planet.name}</h3>
+                    <div class="planet-details">
+                        <p><strong>Diameter:</strong> ${planet.diameter}</p>
+                        <p><strong>Distance:</strong> ${planet.distance}</p>
+                        <p><strong>Moons:</strong> ${planet.moons}</p>
+                        <p style="margin-top: 15px; font-style: italic; color: #ffd700;">${planet.fact}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+        displayPlanets();
+
+        // Quiz questions
+        const quizData = [
+            {q: "What is the largest planet in our solar system?", options: ["Earth", "Jupiter", "Saturn", "Mars"], answer: 1},
+            {q: "Which planet is known as the Red Planet?", options: ["Venus", "Mars", "Mercury", "Jupiter"], answer: 1},
+            {q: "How many planets are in our solar system?", options: ["7", "8", "9", "10"], answer: 1},
+            {q: "What is the closest star to Earth?", options: ["Alpha Centauri", "Sirius", "The Sun", "Betelgeuse"], answer: 2},
+            {q: "Which planet has the most moons?", options: ["Jupiter", "Saturn", "Uranus", "Neptune"], answer: 1},
+            {q: "What is the hottest planet in our solar system?", options: ["Mercury", "Venus", "Mars", "Earth"], answer: 1},
+            {q: "What causes the seasons on Earth?", options: ["Distance from Sun", "Earth's tilt", "Solar flares", "Moon phases"], answer: 1},
+            {q: "Which planet is famous for its rings?", options: ["Jupiter", "Saturn", "Uranus", "Neptune"], answer: 1},
+            {q: "What is a light-year?", options: ["Time unit", "Distance unit", "Speed unit", "Energy unit"], answer: 1},
+            {q: "Which planet rotates on its side?", options: ["Mars", "Uranus", "Venus", "Neptune"], answer: 1},
+            {q: "What is the name of our galaxy?", options: ["Andromeda", "Milky Way", "Whirlpool", "Sombrero"], answer: 1},
+            {q: "How long does it take Earth to orbit the Sun?", options: ["24 hours", "365 days", "30 days", "12 months"], answer: 1},
+            {q: "What is the coldest planet?", options: ["Neptune", "Uranus", "Pluto", "Mars"], answer: 1},
+            {q: "What are asteroids made of?", options: ["Ice", "Gas", "Rock and metal", "Plasma"], answer: 2},
+            {q: "Which planet has the Great Red Spot?", options: ["Mars", "Saturn", "Jupiter", "Neptune"], answer: 2},
+            {q: "What is the Sun made of?", options: ["Rock", "Water", "Hydrogen and Helium", "Iron"], answer: 2},
+            {q: "How many Earth days is one Mars day?", options: ["20 hours", "24.6 hours", "30 hours", "12 hours"], answer: 1},
+            {q: "What is a meteor that reaches Earth called?", options: ["Meteoroid", "Meteorite", "Comet", "Asteroid"], answer: 1},
+            {q: "Which planet spins the fastest?", options: ["Earth", "Mars", "Jupiter", "Venus"], answer: 2},
+            {q: "What is the temperature of the Sun's core?", options: ["1 million°C", "5 million°C", "15 million°C", "100 million°C"], answer: 2},
+            {q: "What causes tides on Earth?", options: ["Wind", "Moon's gravity", "Earth's rotation", "Sun's heat"], answer: 1},
+            {q: "Which is the smallest planet?", options: ["Mercury", "Mars", "Venus", "Pluto"], answer: 0},
+            {q: "What is the edge of a black hole called?", options: ["Photon sphere", "Event horizon", "Singularity", "Accretion disk"], answer: 1},
+            {q: "How old is the universe approximately?", options: ["4.5 billion years", "10 billion years", "13.8 billion years", "20 billion years"], answer: 2},
+            {q: "What is the main component of Saturn's rings?", options: ["Rock", "Ice", "Dust", "Gas"], answer: 1},
+            {q: "Which planet has the longest day?", options: ["Mercury", "Venus", "Earth", "Mars"], answer: 1},
+            {q: "What is a supernova?", options: ["New star", "Dying star explosion", "Black hole", "Nebula"], answer: 1},
+            {q: "How many Earths could fit inside the Sun?", options: ["100", "1,000", "1.3 million", "10 million"], answer: 2}
+        ];
+
+        let userAnswers = {};
+
+        function loadQuiz() {
+            const container = document.getElementById('quizQuestions');
+            container.innerHTML = '';
+            
+            quizData.forEach((q, index) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.innerHTML = `
+                    <h3>Question ${index + 1}: ${q.q}</h3>
+                    <div class="answer-grid">
+                        ${q.options.map((opt, i) => `
+                            <div class="answer-option" onclick="selectAnswer(${index}, ${i})" data-q="${index}" data-opt="${i}">
+                                ${opt}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function selectAnswer(qIndex, optIndex) {
+            userAnswers[qIndex] = optIndex;
+            
+            const options = document.querySelectorAll(`[data-q="${qIndex}"]`);
+            options.forEach(opt => opt.classList.remove('selected'));
+            
+            document.querySelector(`[data-q="${qIndex}"][data-opt="${optIndex}"]`).classList.add('selected');
+            
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const answered = Object.keys(userAnswers).length;
+            const total = quizData.length;
+            const percentage = (answered / total) * 100;
+            document.getElementById('progressFill').style.width = percentage + '%';
+        }
+
+        function submitQuiz() {
+            let correct = 0;
+            
+            quizData.forEach((q, index) => {
+                const options = document.querySelectorAll(`[data-q="${index}"]`);
+                const correctOpt = options[q.answer];
+                correctOpt.classList.add('correct');
+                
+                if (userAnswers[index] === q.answer) {
+                    correct++;
+                } else if (userAnswers[index] !== undefined) {
+                    options[userAnswers[index]].classList.add('wrong');
+                }
+            });
+            
+            const percentage = Math.round((correct / quizData.length) * 100);
+            const result = document.getElementById('quizResult');
+            
+            let message = '';
+            if (percentage >= 90) message = '🌟 Outstanding! You\'re an astronomy genius!';
+            else if (percentage >= 75) message = '🎉 Excellent work! You know your space facts!';
+            else if (percentage >= 60) message = '👍 Good job! Keep exploring the cosmos!';
+            else message = '📚 Keep learning! The universe has many secrets!';
+            
+            result.innerHTML = `
+                <h2>Quiz Complete!</h2>
+                <div class="score-circle">${percentage}%</div>
+                <p style="font-size: 1.5em; margin: 20px 0;">You got ${correct} out of ${quizData.length} correct!</p>
+                <p style="font-size: 1.2em; color: #ffd700;">${message}</p>
+                <button class="retry-btn" onclick="retryQuiz()">Try Again</button>
+            `;
+            result.classList.add('show');
+            
+            result.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function retryQuiz() {
+            userAnswers = {};
+            document.getElementById('quizResult').classList.remove('show');
+            loadQuiz();
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabName === 'quiz') {
+                loadQuiz();
+                document.getElementById('quizResult').classList.remove('show');
+                userAnswers = {};
+                updateProgress();
+            }
+        }
+
+        // Initialize quiz
+        loadQuiz();
+    </script>
+</body>
+</html>
